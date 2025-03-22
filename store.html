@@ -1,0 +1,587 @@
+
+
+    <!-- <div id="navbar-container1"></div> -->
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Shop</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="./dynamiccon.js"></script>
+    <script type="module" src="./navbar.js"></script>
+    <script src="bottomnv.js"></script>
+    <script src="kaka.js"></script>
+    <script>
+      tailwind.config = {
+          theme: {
+              extend: {}
+          },
+          plugins: [
+              function ({ addUtilities }) {
+                  addUtilities({
+                      '.scrollbar-hide': {
+                          '-ms-overflow-style': 'none', /* Hide scrollbar for IE and Edge */
+                          'scrollbar-width': 'none', /* Hide scrollbar for Firefox */
+                      },
+                      '.scrollbar-hide::-webkit-scrollbar': {
+                          display: 'none' /* Hide scrollbar for Chrome, Safari */
+                      }
+                  })
+              }
+          ]
+      };
+  </script>
+</head>
+<body class="bg-gray-900 text-white">
+  <div class="fixed top-0 bg-[#172554] z-20 w-full  border-b">
+    <div id="navbar-container"></div>
+  </div>
+    <div class="container mx-auto p-6">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mt-28 mb-4 ">
+            <h1 id="lolo" class="text-3xl font-bold text-white">BookStore</h1>
+
+           
+        </div>
+
+        <!-- Search Bar -->
+        <div class="items-center border border-gray-700 p-3 rounded-lg mb-4 flex">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 2a6 6 0 104.472 10.472l3.9 3.9a1 1 0 001.415-1.415l-3.9-3.9A6 6 0 008 2zM3 8a5 5 0 1110 0A5 5 0 013 8z" clip-rule="evenodd"/>
+          </svg>
+          <input
+          type="text" 
+          id="search-input"
+          placeholder="Search"
+          class="outline-none bg-transparent ml-2  "
+          />
+        </div>
+
+        <!-- Filters -->
+        <div class="flex items-center mb-4 space-x-6 bg-gray-800 bg-opacity-60 p-4 rounded-lg shadow-md overflow-auto scrollbar-hide ">
+          <!-- All Checkbox -->
+          <label for="all-filter" class="flex items-center space-x-2 cursor-pointer px-3 py-2 bg-gray-900 rounded-lg hover:bg-blue-600 transition">
+              <input type="checkbox" id="all-filter" class="hidden peer">
+              <div class="w-5 h-5 flex items-center justify-center border border-gray-500 rounded-md peer-checked:bg-blue-500 peer-checked:border-blue-500">
+                  <i class="fas fa-check text-white text-sm hidden peer-checked:block"></i>
+              </div>
+              <span class="text-white font-medium">All</span>
+          </label>
+      
+          <!-- Free Checkbox -->
+          <label for="free-filter" class="flex items-center space-x-2 cursor-pointer px-3 py-2 bg-gray-900 rounded-lg hover:bg-blue-600 transition">
+              <input type="checkbox" id="free-filter" value="free" class="hidden peer">
+              <div class="w-5 h-5 flex items-center justify-center border border-gray-500 rounded-md peer-checked:bg-blue-500 peer-checked:border-blue-500">
+                  <i class="fas fa-check text-white text-sm hidden peer-checked:block"></i>
+              </div>
+              <span class="text-white font-medium">Free</span>
+          </label>
+      
+          <!-- Paid Checkbox -->
+          <label for="paid-filter" class="flex items-center space-x-2 cursor-pointer px-3 py-2 bg-gray-900 rounded-lg hover:bg-blue-600 transition">
+              <input type="checkbox" id="paid-filter" value="paid" class="hidden peer">
+              <div class="w-5 h-5 flex items-center justify-center border border-gray-500 rounded-md peer-checked:bg-blue-500 peer-checked:border-blue-500">
+                  <i class="fas fa-check text-white text-sm hidden peer-checked:block"></i>
+              </div>
+              <span class="text-white font-medium">Paid</span>
+          </label>
+      </div>
+      
+      
+      
+
+        <!-- Book Container -->
+   <div id="books-container" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            <!-- Book cards will be appended here dynamically -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center mt-6">
+            <!-- Pagination links will be appended here dynamically -->
+        </div>
+    </div>
+
+    <!-- Modal for account creation -->
+    <!-- Modal for account creation -->
+    <!-- Modal for account creation and login -->
+    <div id="account-modal" class="modal">
+      <div class="modal-dialog">
+  
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs, doc, getDoc,arrayUnion, updateDoc,setDoc
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+        authDomain: "profstudymate-6d0fc.firebaseapp.com",
+        projectId: "profstudymate",
+        storageBucket: "profstudymate.appspot.com",
+        messagingSenderId: "141453158869",
+        appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      // Constants for pagination
+      const booksPerPage = 7; // Number of books per page
+      let currentPage = 1; // Current page
+      var booktitle = "sssss";
+      const urlParams = new URLSearchParams(window.location.search);
+const courseTitle = urlParams.get("title");
+
+if (courseTitle) {
+  document.getElementById("lolo").textContent = courseTitle;
+}
+
+      // Function to fetch and display books
+      async function fetchBooks(query = "", filter = "") {
+        const booksContainer = document.getElementById("books-container");
+        booksContainer.innerHTML = ""; // Clear previous results
+        try {
+          const booksSnapshot = await getDocs(collection(db, "books"));
+
+          const books = booksSnapshot.docs
+            .map((doc) => doc.data())
+            .filter(
+              (book) =>
+                book.title.toLowerCase().includes(query.toLowerCase()) ||
+                book.description.toLowerCase().includes(query.toLowerCase())
+            );
+
+          // Apply filter if specified
+          const selectedFilters = getSelectedFilters();
+let filteredBooks = books; // Start with all books
+
+if (selectedFilters.length > 0) {
+    filteredBooks = books.filter((book) => {
+        return (selectedFilters.includes("free") && book.amount === "0") || 
+               (selectedFilters.includes("paid") && book.amount !== "0");
+    });
+}
+
+
+
+          const startIndex = (currentPage - 1) * booksPerPage;
+          const endIndex = startIndex + booksPerPage;
+          const paginatedBooks = filteredBooks.slice(startIndex, endIndex);
+
+          paginatedBooks.forEach((book) => {
+            const bookCard = document.createElement("div");
+            bookCard.className =
+              " mx-auto bg-gray-800 shadow-md rounded-lg overflow-hidden flex flex-col";
+            bookCard.innerHTML = /*html*/ `
+            <div class="relative flex-shrink-0">
+              <a href="#" class="block">
+                <div class="aspect-w-16 aspect-h-9 ">
+                  <img src="${book.image_url}" alt="${book.title}" class="w-full h-56 lg:hover:h-full object-cover">
+                     <!-- Fullscreen Icon -->
+      <button class="absolute top-2 right-2 bg-black bg-opacity-50 w-12 h-12 p-2 rounded-full text-white hover:bg-opacity-75 transition" 
+              onclick="openFullscreen('${book.image_url}')">
+        <i class="fas fa-expand"></i>
+      </button>
+                </div>
+              </a>
+            </div>
+            <div class="p-4 flex flex-col flex-grow">
+              <div class="flex items-center mb-2">
+                <!-- Star icons -->
+                <div class="flex space-x-1">
+                  <i class="fas fa-star star-icon "></i>
+                  <i class="fas fa-star star-icon"></i>
+                  <i class="fas fa-star star-icon"></i>
+                  <i class="fas fa-star star-icon"></i>
+                  <i class="fas fa-star star-icon"></i>
+                </div>
+              </div>
+              <h3 class="text-xl font-semibold mb-3" title="${book.title}">
+                <a href="#" class="hover:text-blue-400">${book.title}</a>
+              </h3>
+              <p class="text-gray-400 mb-3 flex-grow">${book.description}</p>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between">
+                  <div class="text-white font-bold text-lg">
+                    <span>₵${book.amount}</span>
+                  </div>
+                  <button  class="flex items-center space-x-2 border border-blue-500 text-blue-500 px-4 py-2 rounded-md hover:bg-blue-500 hover:text-white transition add-to-cart-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Checkout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+            booksContainer.appendChild(bookCard);
+
+            // Add click event listener to add to cart button
+            // Assuming you have an array or list of buttons with class 'addToCartBtn'
+            const addToCartBtns = document.querySelectorAll(".add-to-cart-btn");
+
+            // Adding event listener to each button
+            addToCartBtns.forEach((btn, index) => {
+  btn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+
+    if (!user) {
+      window.location.href = "./account.html"; // Redirect to login page
+      return;
+    }
+
+    try {
+      // Fetch user data
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      let refcode = ""; // Default value
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        if (userData.underef) {
+          refcode = userData.underef;
+        }
+      }
+
+      // Fetch book details
+      const querySnapshot = await getDocs(collection(db, "books"));
+      if (index >= querySnapshot.docs.length) {
+        console.error("Invalid index: No book found");
+        return;
+      }
+
+      const bookDoc = querySnapshot.docs[index];
+      const bookData = bookDoc.data();
+      const { title, amount, description, image_url } = bookData;
+      const bookId = bookDoc.id;
+
+      if (amount === "0" || amount === 0) {
+        // If the book is free, add it to the user's collection
+        if (userDocSnap.exists()) {
+          await updateDoc(userDocRef, {
+            books: arrayUnion(bookId),
+          });
+        } else {
+          await setDoc(userDocRef, {
+            books: [bookId],
+          });
+        }
+
+        alert("Book added to your collection!");
+      } else {
+        // Proceed with checkout for paid books
+        const queryParams = new URLSearchParams({
+          userid: user.uid,
+          id: bookId,
+          title,
+          amount,
+          description,
+          image_url,
+          referalcode: refcode,
+        }).toString();
+
+        window.location.href = `cart.html?${queryParams}`;
+      }
+    } catch (error) {
+      console.error("Error processing book:", error);
+    }
+  });
+});
+
+
+
+          });
+
+          renderPagination(filteredBooks.length);
+        } catch (error) {
+          console.error("Error fetching books: ", error);
+        }
+
+        
+      }
+
+
+
+
+
+      // Function to render pagination
+      function renderPagination(totalBooks) {
+        const paginationElement = document.getElementById("pagination");
+        paginationElement.innerHTML = "";
+
+        const totalPages = Math.ceil(totalBooks / booksPerPage);
+        if (totalPages === 0) {
+          // Display a message when there are no books
+          const noBooksMessage = document.createElement("p");
+          noBooksMessage.textContent = "No books available.";
+          noBooksMessage.className = "text-gray-500";
+          paginationElement.appendChild(noBooksMessage);
+        } else if (totalPages > 1) {
+          for (let i = 1; i <= totalPages; i++) {
+            const pageLink = document.createElement("a");
+            pageLink.href = "#";
+            pageLink.textContent = i;
+            pageLink.className =
+              "px-3 py-1 mx-1 rounded-md hover:bg-blue-500 hover:text-white transition";
+            if (i === currentPage) {
+              pageLink.classList.add("bg-blue-500", "text-white");
+            } else {
+              pageLink.classList.add("bg-gray-800", "text-white");
+            }
+            pageLink.addEventListener("click", () => {
+              currentPage = i;
+              fetchBooks(
+                document.getElementById("search-input").value,
+                getSelectedFilter()
+              );
+            });
+            paginationElement.appendChild(pageLink);
+          }
+        }
+      }
+
+      // Function to check if user is logged in (placeholder function)
+      function isLoggedIn() {
+        // Assuming 'auth' is your Firebase auth instance
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // User is signed in.
+            console.log("User is logged in:", user);
+            return true;
+          } else {
+            // No user is signed in.
+            console.log("No user logged in.");
+            return false;
+          }
+        });
+      }
+
+      // Function to show modal
+      function showModal() {
+        const modal = document.getElementById("account-modal");
+        modal.style.display = "block";
+
+        // Close modal event listener
+        const closeModalBtn = document.getElementById("close-modal");
+        closeModalBtn.addEventListener("click", () => {
+          modal.style.display = "none";
+        });
+
+        // Optionally add more logic here for modal interaction
+      }
+
+    
+// Function to get selected filters as an array
+// Function to get selected filters
+function getSelectedFilters() {
+    const allFilter = document.getElementById("all-filter");
+    const freeFilter = document.getElementById("free-filter");
+    const paidFilter = document.getElementById("paid-filter");
+
+    if (allFilter.checked) {
+        return ["free", "paid"]; // If "All" is checked, show both Free and Paid books
+    }
+
+    const selectedFilters = [];
+    if (freeFilter.checked) selectedFilters.push("free");
+    if (paidFilter.checked) selectedFilters.push("paid");
+    
+    return selectedFilters;
+}
+
+
+
+
+      // Fetch books on page load
+      document.addEventListener("DOMContentLoaded", () => {
+
+
+        fetchBooks(); // Initial fetch
+
+            // Search functionality: triggers as user types
+    document.getElementById("search-input").addEventListener("input", (e) => {
+        currentPage = 1; // Reset to first page when searching
+        fetchBooks(e.target.value);
+    });
+        const filterRadios = document.querySelectorAll(
+          'input[name="price-filter"]'
+        );
+        document.querySelectorAll("#all-filter, #free-filter, #paid-filter").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+        const allFilter = document.getElementById("all-filter");
+        const freeFilter = document.getElementById("free-filter");
+        const paidFilter = document.getElementById("paid-filter");
+
+        if (checkbox.id === "all-filter") {
+            // If "All" is checked, check both "Free" and "Paid"
+            freeFilter.checked = allFilter.checked;
+            paidFilter.checked = allFilter.checked;
+        } else {
+            // If either "Free" or "Paid" is unchecked, uncheck "All"
+            allFilter.checked = freeFilter.checked && paidFilter.checked;
+        }
+
+        // Fetch books based on the new filter selection
+        fetchBooks(document.getElementById("search-input").value, getSelectedFilters());
+    });
+});
+
+
+
+        // Clear filters button event listener
+        document
+          .getElementById("clear-filters")
+          .addEventListener("click", () => {
+            currentPage = 1; // Reset to first page when clearing filters
+            document.getElementById("free-filter").checked = false;
+            document.getElementById("paid-filter").checked = false;
+            fetchBooks(document.getElementById("search-input").value, "");
+          });
+      });
+
+      // Add event listener for search input
+      document.getElementById("search-input").addEventListener("input", (e) => {
+        currentPage = 1; // Reset to first page when searching
+        fetchBooks(e.target.value, getSelectedFilter());
+      });
+      document
+        .getElementById("toggle-login")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          document.getElementById("create-account-section").style.display =
+            "none";
+          document.getElementById("login-section").style.display = "block";
+        });
+
+      document
+        .getElementById("toggle-create")
+        .addEventListener("click", function (event) {
+          event.preventDefault();
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("create-account-section").style.display =
+            "block";
+        });
+      // Function to handle account creation form submission
+      document
+        .getElementById("account-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const fullName = document.getElementById("full-name").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const telephone = document.getElementById("telephone").value;
+
+          try {
+            const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            const user = userCredential.user;
+            // Optionally, you can update user profile with full name and other details
+            await user.updateProfile({
+              displayName: fullName,
+              phoneNumber: telephone,
+            });
+
+            // Close the modal after successful account creation
+            closeModal();
+
+            // Optionally, you can add logic here to handle adding the item to the cart after account creation
+            addToCart(); // Replace with your actual add to cart function
+          } catch (error) {
+            // Handle account creation errors
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error("Error creating account:", errorCode, errorMessage);
+
+            // Display error message to the user (you can customize this based on your UI)
+            const errorElement = document.createElement("div");
+            errorElement.textContent = errorMessage;
+            errorElement.classList.add("text-red-500", "text-sm", "mt-2");
+            document.getElementById("account-form").appendChild(errorElement);
+          }
+        });
+
+      // Function to handle login form submission
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("login-email").value;
+          const password = document.getElementById("login-password").value;
+
+          try {
+            const userCredential = await signInWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+            // Login successful
+            console.log("User logged in:", userCredential.user.email);
+            // Optionally, you can add logic here to handle adding the item to the cart after login
+            addToCart(); // Replace with your actual add to cart function
+            closeModal(); // Close modal after successful login
+          } catch (error) {
+            // Handle login errors
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error("Error signing in:", errorCode, errorMessage);
+
+            // Display error message to the user (you can customize this based on your UI)
+            const errorElement = document.createElement("div");
+            errorElement.textContent = errorMessage;
+            errorElement.classList.add("text-red-500", "text-sm", "mt-2");
+            document.getElementById("login-form").appendChild(errorElement);
+          }
+        });
+
+      // Function to close modal
+      function closeModal() {
+        const modal = document.getElementById("account-modal");
+        modal.style.display = "none";
+      }
+
+      document.getElementById("search-input").addEventListener("input", (e) => {
+    currentPage = 1; // Reset to first page when searching
+    fetchBooks(e.target.value);
+});
+
+    </script>
+    <script>
+            function openFullscreen(imageUrl) {
+        console.log('dddddddd')
+    const fullscreenDiv = document.createElement("div");
+    fullscreenDiv.className = "fixed top-0 right-0 left-0  flex items-center justify-center z-50";
+    fullscreenDiv.innerHTML = `
+        <div class="relative max-w-3xl w-full p-4">
+            <button class="absolute top-4 w-12 h-12 right-4 bg-black bg-opacity-50  text-white p-2 rounded-full hover:bg-opacity-75 transition" onclick="document.body.removeChild(this.parentNode.parentNode)">
+                <i class="fas fa-times"></i>
+            </button>
+            <img src="${imageUrl}" class="w-full h-auto rounded-lg shadow-lg">
+        </div>
+    `;
+
+    document.body.appendChild(fullscreenDiv);
+}
+    </script>
+    <script src="footerp.js"></script>
+    <div id="footer-container"></div>
+  </body>
+</html>

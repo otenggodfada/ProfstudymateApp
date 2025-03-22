@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      defer
+      src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.umd.js"
+    ></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="./dynamiccon.js"></script>
+  <script type="module" src="./navbar.js"></script>
+  <script src="bottomnv.js"></script>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class=" bg-[#172554] px-5 z-20 fixed top-0 w-screen ">
+       
+      <div id="navbar-container"></div></div>
+     <div class=" mt-44  flex  justify-center mb-40 m-8">
+      <div class="w-full max-w-3xl  border border-gray-500/30  p-10 rounded-lg shadow-lg">
+        <h2 class="text-3xl font-semibold text-center mb-8">Edit Profile</h2>
+        <form id="editProfileForm" class="space-y-6">
+          <div>
+            <label class="block text-gray-300 flex items-center gap-3 mb-2">
+              <i data-lucide="user"></i> Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              class="w-full p-3 border border-gray-500/50 rounded bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+  
+          <div>
+            <label class="block text-gray-300 flex items-center gap-3 mb-2">
+              <i data-lucide="mail"></i> Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              class="w-full p-3 border rounded  border-gray-500/50 bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+              required
+              disabled
+            />
+          </div>
+  
+          <div>
+            <label class="block text-gray-300 flex items-center gap-3 mb-2">
+              <i data-lucide="image"></i> Profile Picture URL
+            </label>
+            <input
+              type="text"
+              id="photoURL"
+              class="w-full p-3 border rounded  border-gray-500/50 bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+  
+          <div id="zoomFields" class="hidden space-y-6">
+            <div>
+              <label class="block text-gray-300 flex items-center gap-3 mb-2">
+                <i data-lucide="video"></i> Zoom ID
+              </label>
+              <input
+                type="text"
+                id="zoomId"
+                class="w-full p-3 border rounded  border-gray-500/50 bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+  
+            <div>
+              <label class="block text-gray-300 flex items-center gap-3 mb-2">
+                <i data-lucide="lock"></i> Zoom Passcode
+              </label>
+              <input
+                type="text"
+                id="zoomPasscode"
+                class="w-full p-3 border rounded  border-gray-500/50 bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+  
+          <button
+            type="submit"
+            class="w-full p-4 bg-[#172554]  border rounded-md hover:bg-blue-600 transition flex items-center justify-center gap-3 shadow-md"
+          >
+            <i data-lucide="save"></i> Save Changes
+          </button>
+        </form>
+      </div>
+     </div>
+      <footer>
+        <div
+          class="fixed z-50 bottom-0 right-0 left-0"
+          id="navbar-container1"
+        ></div>
+      </footer>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+        updateDoc,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+        authDomain: "profstudymate-6d0fc.firebaseapp.com",
+        projectId: "profstudymate",
+        storageBucket: "profstudymate.appspot.com",
+        messagingSenderId: "141453158869",
+        appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = "./account.html";
+          return;
+        }
+
+        const userDoc = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          document.getElementById("name").value = userData.name || "";
+          document.getElementById("email").value = userData.email || "";
+          document.getElementById("photoURL").value = userData.photoURL || "";
+
+          if (userData.role === "author") {
+            document.getElementById("zoomFields").classList.remove("hidden");
+            document.getElementById("zoomId").value = userData.zoomId || "";
+            document.getElementById("zoomPasscode").value = userData.zoomPasscode || "";
+          }
+        }
+      });
+
+      document.getElementById("editProfileForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const userDoc = doc(db, "users", user.uid);
+        const updatedData = {
+          name: document.getElementById("name").value,
+          photoURL: document.getElementById("photoURL").value,
+        };
+
+        if (!document.getElementById("zoomFields").classList.contains("hidden")) {
+          updatedData.zoomId = document.getElementById("zoomId").value;
+          updatedData.zoomPasscode = document.getElementById("zoomPasscode").value;
+        }
+
+        await updateDoc(userDoc, updatedData);
+        alert("Profile updated successfully!");
+        window.location.href = "profile.html";
+      });
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profstudymate Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/framer-motion/10.16.2/framer-motion.umd.min.js"
+      defer
+    ></script>
+    <style>
+      .glassmorphism {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    </style>
+    <link rel="stylesheet" href="animatecss.css">
+    <script src="animatescript.js" defer></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        query,
+        orderBy,
+        doc,
+        getDoc,
+        addDoc,
+        serverTimestamp,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      // Firebase Config
+      const firebaseConfig = {
+        apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+        authDomain: "profstudymate-6d0fc.firebaseapp.com",
+        projectId: "profstudymate",
+        storageBucket: "profstudymate.appspot.com",
+        messagingSenderId: "141453158869",
+        appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get("id");
+
+      if (postId) {
+        loadPost(postId);
+      } else {
+        fetchPosts();
+      }
+
+      async function fetchPosts() {
+  const postsContainer = document.getElementById("content");
+  const searchInput = document.getElementById("searchInput");
+  const querySnapshot = await getDocs(
+    query(collection(db, "blogs"), orderBy("timestamp", "desc"))
+  );
+
+  let posts = [];
+  querySnapshot.forEach((docSnap) => {
+    let post = { id: docSnap.id, ...docSnap.data() };
+    posts.push(post);
+  });
+
+  function displayPosts(filteredPosts) {
+    postsContainer.innerHTML = "";
+    filteredPosts.forEach((post) => {
+      const formattedDate = new Date(
+        post.timestamp?.seconds * 1000
+      ).toLocaleDateString();
+
+      postsContainer.innerHTML += `
+        <div class="bg-white/10 backdrop-blur-lg  rounded-xl shadow-lg border border-white/20 transition-transform transform hover:scale-105">
+           <img src="${post.link}" alt="Thumbnail" class="w-full h-52 object-cover rounded-t-lg mb-4">
+          <div class="p-6">
+           
+          <h2 class="text-2xl font-semibold text-white">${post.title}</h2>
+          <p class="text-gray-300 mt-2">${post.description}</p>
+          <p class="text-sm text-gray-400 mt-2">📅 ${formattedDate}</p>
+          <a href="?id=${post.id}" class="mt-4 inline-block px-4 py-3 bg-blue-500/50 border-white/20 border text-white font-semibold rounded-lg hover:bg-blue-600 transition">Read More</a>
+            
+            </div
+        </div>`;
+    });
+  }
+
+ // Initial display
+ displayPosts(posts);
+
+// Search functionality
+searchInput.addEventListener("input", () => {
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  if (!searchTerm) {
+    displayPosts(posts);
+    return;
+  }
+
+  const searchWords = searchTerm.split(/\s+/); // Split by spaces
+  const filteredPosts = posts.filter((post) => {
+    const postContent = `${post.title} ${post.description}`.toLowerCase();
+    const matchCount = searchWords.filter((word) => postContent.includes(word)).length;
+    
+    return matchCount >= 2; // Require at least two matches
+  });
+
+  displayPosts(filteredPosts);
+});
+
+}
+
+async function loadPost(postId) {
+    const postDoc = await getDoc(doc(db, "blogs", postId));
+
+    if (!postDoc.exists()) {
+        document.getElementById("content").innerHTML = "<h2 class='text-red-500 text-center'>Post Not Found</h2>";
+        return;
+    }
+
+    const post = postDoc.data();
+    const formattedDate = new Date(post.timestamp?.seconds * 1000).toLocaleDateString();
+
+    document.getElementById("content").innerHTML = `
+        <div class="max-w-6xl mx-auto backdrop-blur-lg lg:p-6 sm:p-2 sm:p-12 rounded-2xl shadow-xl lg:border border-white/20 w-full lg:w-screen">
+            <div class="flex flex-col lg:flex-row lg:items-start gap-16">
+                <div class="lg:w-[65%] w-full">
+                    <h1 class="text-5xl font-extrabold text-white">${post.title}</h1>
+                    <p class="text-sm text-gray-400 mt-4">📅 ${formattedDate}</p>
+                    <img src="${post.link}" alt="Thumbnail" class="w-full max-h-[500px] object-cover rounded-xl mt-8 shadow-lg">
+                    <div class="mt-10 text-lg leading-relaxed text-gray-300 space-y-6">
+                        ${post.content}
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap gap-4 items-center">
+    <button onclick="shareBlog('${postId}', '${post.title}', '${window.location.href}')"
+        class="flex items-center gap-2 px-6 py-3 bg-green-500/50 text-white font-semibold rounded-lg hover:bg-green-600 transition shadow-lg">
+        <i class="fas fa-share-alt"></i> Share
+    </button>
+    
+    <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}"
+        target="_blank"
+        class="flex items-center gap-2 px-6 py-3 bg-blue-500/50 text-white font-semibold rounded-lg hover:bg-blue-600 transition shadow-lg">
+        <i class="fab fa-twitter"></i> Twitter
+    </a>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}"
+        target="_blank"
+        class="flex items-center gap-2 px-6 py-3 bg-blue-700/50 text-white font-semibold rounded-lg hover:bg-blue-800 transition shadow-lg">
+        <i class="fab fa-facebook"></i> Facebook
+    </a>
+
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(post.title)}"
+        target="_blank"
+        class="flex items-center gap-2 px-6 py-3 bg-blue-800/50 text-white font-semibold rounded-lg hover:bg-blue-900 transition shadow-lg">
+        <i class="fab fa-linkedin"></i> LinkedIn
+    </a>
+
+    <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + ' ' + window.location.href)}"
+        target="_blank"
+        class="flex items-center gap-2 px-6 py-3 bg-green-600/50 text-white font-semibold rounded-lg hover:bg-green-700 transition shadow-lg">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+    </a>
+</div>
+
+                    <a href="blog.html" class="mt-12 inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-lg font-semibold rounded-full shadow-md hover:opacity-80 transition">
+                        ⬅ Back to Blogs
+                    </a>
+                </div>
+                <div class="lg:w-[40%] w-full mt-16 lg:mt-0 lg:pl-6">
+                    <h2 class="text-4xl font-bold text-white">💬 Comments</h2>
+                    <ul id="comments" class="text-gray-300 mt-6 bg-gray-800/50 p-6 rounded-xl shadow-lg space-y-6 max-h-96 overflow-auto"></ul>
+                    <div class="mt-8 bg-gray-800/60 p-6 rounded-xl shadow-lg">
+                        <textarea id="comment-input" class="w-full p-5 bg-gray-700 text-white rounded-xl border border-gray-600 focus:ring focus:ring-blue-500 text-lg" placeholder="Write a comment..."></textarea>
+                        <button onclick="addComment('${postId}')" class="mt-6 w-full px-6 py-4 bg-blue-500/50 text-white font-semibold text-lg rounded-xl hover:bg-blue-600 transition shadow-lg">
+                            Add Comment
+                        </button>
+                    </div>
+                       <h2 class="text-3xl font-bold text-white mt-16">📝 More Blogs</h2>
+            <div id="more-blogs" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8 mt-8"></div>
+                </div>
+            </div>
+         
+        </div>
+    `;
+    
+    loadComments(postId);
+    loadMoreBlogs(postId);
+}
+
+async function loadMoreBlogs(excludePostId) {
+    const blogsContainer = document.getElementById("more-blogs");
+    blogsContainer.innerHTML = "<p class='text-gray-400'>Loading...</p>";
+
+    const querySnapshot = await getDocs(collection(db, "blogs"));
+    let blogsHTML = "";
+    
+    querySnapshot.forEach((doc) => {
+        if (doc.id !== excludePostId) {
+            const blog = doc.data();
+            const formattedDate = new Date(blog.timestamp?.seconds * 1000).toLocaleDateString();
+            blogsHTML += `
+                <div class="bg-gray-800/50 p-6 rounded-xl shadow-lg">
+                    <img src="${blog.link}" class="w-full h-48 object-cover rounded-lg shadow-md">
+                    <h3 class="text-xl font-bold text-white mt-4">${blog.title}</h3>
+                    <p class="text-sm text-gray-400">📅 ${formattedDate}</p>
+                    <a href="id=${doc.id}" class="mt-4 inline-block text-blue-400 hover:text-blue-300 transition">Read More →</a>
+                </div>
+            `;
+        }
+      
+    });
+    blogsContainer.innerHTML = blogsHTML || "<p class='text-gray-400'>No other blogs available.</p>";
+}
+
+      async function loadComments(postId) {
+        const commentsContainer = document.getElementById("comments");
+        const querySnapshot = await getDocs(
+          collection(db, "blogs", postId, "comments")
+        );
+        let commentsHTML = "";
+        querySnapshot.forEach((doc) => {
+          const comment = doc.data();
+          const formattedDate = new Date(
+            comment.timestamp?.seconds * 1000
+          ).toLocaleDateString();
+          commentsHTML += `
+                    <li class="bg-gray-700 p-3 rounded-lg border border-gray-600 shadow-lg">
+                        <p class="text-white">🗨️ ${comment.content}</p>
+                        <p class="text-sm text-gray-400 mt-1">📅 ${formattedDate}</p>
+                    </li>`;
+        });
+        commentsContainer.innerHTML =
+          commentsHTML ||
+          "<li class='text-gray-500 text-center'>No comments yet.</li>";
+      }
+
+
+      async function addComment(postId) {
+    const commentInput = document.getElementById("comment-input");
+    const commentText = commentInput.value.trim();
+    
+    if (!commentText) {
+        alert("Please enter a comment before submitting.");
+        return;
+    }
+
+    const commentRef = collection(db, "blogs", postId, "comments");
+    
+    await addDoc(commentRef, {
+        content: commentText,
+        timestamp: serverTimestamp()
+    });
+    
+    commentInput.value = ""; // Clear input field after submission
+    loadComments(postId); // Refresh comments
+}
+
+      function shareBlog(postId, title, url) {
+    if (navigator.share) {
+        navigator.share({
+            title: title,
+            text: "Check out this amazing blog post!",
+            url: url,
+        })
+        .then(() => console.log("Successfully shared"))
+        .catch((error) => console.log("Error sharing:", error));
+    } else {
+        alert("Sharing not supported on this browser. Use the social media buttons instead.");
+    }
+}
+
+    </script>
+     <script type="module" src="./dynamiccon.js"></script>
+     <script src="bottomnv.js"></script>
+     <script src="navbar.js"></script>
+     <script>
+      tailwind.config = {
+          theme: {
+              extend: {}
+          },
+          plugins: [
+              function ({ addUtilities }) {
+                  addUtilities({
+                      '.scrollbar-hide': {
+                          '-ms-overflow-style': 'none', /* Hide scrollbar for IE and Edge */
+                          'scrollbar-width': 'none', /* Hide scrollbar for Firefox */
+                      },
+                      '.scrollbar-hide::-webkit-scrollbar': {
+                          display: 'none' /* Hide scrollbar for Chrome, Safari */
+                      }
+                  })
+              }
+          ]
+      };
+  </script>
+  </head>
+  <body class="bg-gray-900 text-white">
+    <div class="top-0 fixed bg-[#172554]   z-20 w-screen">
+      <div id="navbar-container"></div>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 py-10 mt-28 fade-in">
+      <div
+        class="flex flex-col items-center justify-center mb-5 bg-gray-900 text-white"
+      >
+    
+       
+          <h1 class="text-4xl text-center font-bold">PROFSTUDYMATE BLOG</h1>
+          <p class="text-gray-400 text-center mt-2">Welcome to Profstudymate, your ultimate companion for ICAG and <br> CITG studies in Ghana! Developed by Profs Training Solutions, our blog provides valuable insights, <br> study tips, and resources to help you succeed in your professional journey. Stay informed, stay ahead! 🚀</p>
+      
+           <div class="flex flex-row justify-center space-x-4 mt-4 mb-4 overflow-auto  sm: mx-12 sm: pl-20  w-full scrollbar-hide fade-in">
+            <div>
+              <a
+              href="http://instagram.com/profs_training_solutions/"
+              target="_blank"
+              class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-pink-500/50"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png"
+                class="w-6 h-6"
+                alt="Instagram"
+              />
+            </a>
+            </div>
+           <div>
+            <a
+            href="http://tiktok.com/@profstraining"
+            target="_blank"
+            class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500/50"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3046/3046120.png"
+              class="w-6 h-6"
+              alt="TikTok"
+            />
+          </a>
+           </div>
+             <div>
+              <a
+              href="http://youtube.com/@ProfsTrainingSolutions"
+              target="_blank"
+              class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-red-500/50"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png"
+                class="w-6 h-6"
+                alt="YouTube"
+              />
+            </a>
+             </div>
+            <div>
+              <a
+              href="https://linkedin.com/in/profs-training-solutions/"
+              target="_blank"
+              class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/50"
+            >
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/1384/1384062.png"
+                class="w-6 h-6"
+                alt="LinkedIn"
+              />
+            </a>
+            </div>
+           <div>
+            <a
+            href="http://facebook.com/ProfsTraining"
+            target="_blank"
+            class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-blue-600/50"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1384/1384053.png"
+              class="w-6 h-6"
+              alt="Facebook"
+            />
+          </a>
+           </div>
+           <div>
+            <a
+            href="https://whatsapp.com/channel/0029VaZV6OeEAKWHHdSdiR1S"
+            target="_blank"
+            class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-green-500/50"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/1384/1384055.png"
+              class="w-6 h-6"
+              alt="WhatsApp"
+            />
+          </a>
+           </div>
+       <div>
+        <a
+        href="https://t.me/Profstrainingsolutions"
+        target="_blank"
+        class="glassmorphism p-2 flex items-center justify-center w-10 h-10 transition-transform transform hover:scale-110 hover:shadow-lg hover:shadow-blue-400/50"
+      >
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"
+          class="w-6 h-6"
+          alt="Telegram"
+        />
+      </a>
+       </div>
+            </div>
+      
+           
+          <div class="flex flex-wrap gap-4 mb-4 mt-3">
+            <span onclick="changeInputContent('CITGH - Professional Level')"
+              class="px-4 py-2 bg-blue-600/20 text-blue-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#CITGH - Professional Level</span
+            >
+            <span onclick="changeInputContent('ICAGH - Level 1')"
+              class="px-4 py-2 bg-green-600/20 text-green-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#ICAGH - Level 1</span
+            >
+            <span onclick="changeInputContent('ICAGH - Level 3')"
+              class="px-4 py-2 bg-purple-600/20 text-purple-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#ICAGH - Level 3</span
+            >
+            <span onclick="changeInputContent('ICAGH - Level 2')"
+              class="px-4 py-2 bg-blue-600/20 text-blue-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#ICAGH - Level 2</span
+            >
+            <span onclick="changeInputContent('Digital Marketing and Business Growth')"
+              class="px-4 py-2 bg-gray-600/20 text-white-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#Digital Marketing and Business Growth</span
+            >
+            <span onclick="changeInputContent('IAS 7 Corporate Training')"
+              class="px-4 py-2 bg-purple-600/20 text-purple-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#IAS 7 Corporate Training</span
+            >
+            <span onclick="changeInputContent('CITGH - Final Level 2')"
+              class="px-4 py-2 bg-blue-600/20 text-blue-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#CITGH - Final Level 2</span
+            >
+            <span onclick="changeInputContent('CITGH - Statement of Cash Flows')"
+              class="px-4 py-2 bg-red-600/20 text-red-400 text-sm font-semibold rounded-full shadow-md border border-white/20 transition-transform transform hover:scale-105"
+              >#CITGH - Final Level 1</span
+            >
+          </div>
+        </motion.div>
+        <div class="items-center border border-gray-700 p-3 w-full rounded-lg  flex">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M8 2a6 6 0 104.472 10.472l3.9 3.9a1 1 0 001.415-1.415l-3.9-3.9A6 6 0 008 2zM3 8a5 5 0 1110 0A5 5 0 013 8z" clip-rule="evenodd"/>
+          </svg>
+          <input
+          type="text" 
+          id="searchInput"
+          placeholder="Search"
+          class="outline-none bg-transparent ml-2 w-full "
+          />
+        </div>
+      </div>
+      
+      <div
+        id="content"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-24"
+      ></div>
+    </div>
+    <footer>
+      <div
+        class="fixed z-50 bottom-0 right-0 left-0"
+        id="navbar-container1"
+      ></div>
+    </footer>
+    <script>
+      function changeInputContent(text1) {
+        let inputField = document.getElementById("searchInput");
+        inputField.focus();
+    
+        // Simulate typing "Updated Content!"
+        let text =text1;
+        inputField.value = ""; // Clear input before typing
+    
+        text.split("").forEach((char, index) => {
+          setTimeout(() => {
+            inputField.value += char;
+    
+            // Dispatch an actual "input" event to mimic real typing
+            let event = new InputEvent("input", { bubbles: true });
+            inputField.dispatchEvent(event);
+          }, index * 40); // Typing speed: 100ms per character
+        });
+    
+        // After 1 second, delete the last character as if the user pressed backspace
+        setTimeout(() => {
+          let event = new KeyboardEvent("keydown", { key: "Backspace", bubbles: true });
+          inputField.value
+          inputField.dispatchEvent(event);
+        }, text.length * 100 + 1000); // Wait for typing to finish + 1 second delay
+      }
+    </script>
+    <script src=""></script>
+    <script src="footerp.js"></script>
+    <div id="footer-container"></div>
+    <script src="kaka.js"></script>
+  </body>
+</html>

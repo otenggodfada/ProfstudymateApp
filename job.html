@@ -1,0 +1,409 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referral Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="navbar.js"></script>
+  <script type="module" src="./dynamiccon.js"></script>
+  <script src="bottomnv.js"></script>
+  <script src="kaka.js"></script>
+  <script type="module" src="nava-links.js"></script>
+  <link rel="stylesheet" href="animatecss.css">
+  <script src="animatescript.js" defer></script>
+</head>
+<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white ">
+  <div class="sticky bg-[#172554] top-0 z-20 w-full">
+    <div id="navbar-container"></div>
+  </div>
+  <div  class="min-h-screen flex mb-8 flex-col items-center  px-2 ">
+    <div class="max-w-4xl w-full   rounded-xl p-2 ">
+
+    
+      <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8 p-6 bg-gray-900 rounded-xl shadow-lg">
+        <!-- Left Section -->
+        <div class="flex-1 text-center md:text-left">
+          <h1 class="text-4xl font-extrabold text-white leading-tight">
+            🚀 Refer & Earn <span class="text-blue-400">20% Commission</span>
+          </h1>
+          <p class="text-gray-300 mt-3 text-lg">
+            Introduce students & earn rewards on all their purchases. Your success starts here! 🎯
+          </p>
+      
+          <!-- Referral Copy -->
+          <div class="mt-6 flex flex-col sm:flex-row items-center gap-3">
+            <a id="referral-link" href="#" class="text-blue-400 text-lg bg-gray-800 px-5 py-2 rounded-lg transition hover:bg-gray-700">
+              Generating link...
+            </a>
+            <button id="copy-referral" class="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
+              <i class="fas fa-copy"></i> Copy Link
+            </button>
+          </div>
+        </div>
+      
+        <!-- Right Section -->
+        <div class="flex items-center justify-center">
+          <img loading="lazy" src="https://www.pngplay.com/wp-content/uploads/6/Affiliate-Program-Network-PNG.png" 
+            class="h-32 w-32 md:h-36 md:w-36 drop-shadow-xl">
+        </div>
+      </div>
+      
+      <!-- User Info Section -->
+      <div id="referral-details" class="mb-12">
+       
+        <div class="bg-gradient-to-br from-gray-800 to-gray-800  border border-gray-700 shadow-lg rounded-2xl p-6 max-w-4xl mx-auto mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Total Referrals -->
+          <div class="bg-gray-900 rounded-lg p-6 flex flex-col items-center fade-in">
+            <h3 id="total-referrals" class="font-bold text-4xl text-blue-400 animate-pulse">0</h3>
+            <p class="text-gray-400 mt-2">Total Referrals</p>
+            <button id="copy-referral1" onclick="scrollToSection('referral-link')" class="mt-4 px-4 py-2 bg-blue-600 text-white  rounded-lg hover:scale-105 transition-all">Refer More</button>
+          </div>
+        
+          <!-- Total Earnings -->
+          <div class="bg-gray-900 rounded-lg p-6 flex flex-col items-center fade-in">
+            <p id="total-earnings" class="font-bold text-3xl text-green-400 animate-bounce">Ghc0.00</p>
+            <p class="text-gray-400 mt-2">Total Earnings</p>
+            <button onclick="scrollToSection('withd')" class="bg-blue-600 text-white px-6 py-3 mt-4 rounded-lg hover:scale-105 transition-all">Withdraw</button>
+          </div>
+        
+          <!-- Total Withdrawals -->
+          <div class="bg-gray-900 rounded-lg p-6 flex flex-col items-center fade-in">
+            <p id="total-withdrawals" class="font-bold text-3xl text-red-400 animate-pulse">Ghc0.00</p>
+            <p class="text-gray-400 mt-2">Total Withdrawals</p>
+            <button onclick="scrollToSection('withdhistory')" class="bg-blue-600 text-white px-6 py-3 mt-4 rounded-lg hover:scale-105 transition-all">View</button>
+          </div>
+        </div>
+        
+        
+
+
+   
+      <!-- Withdrawal Section -->
+      <div id="withd" class="mt-7 bg-gradient-to-br from-gray-800 to-gray-800  border border-gray-700 shadow-lg rounded-2xl p-6 border border-gray-700">
+        <h3 class="text-3xl font-bold mb-6 text-gray-200">Make a Withdrawal</h3>
+      
+        <label for="withdraw-amount" class="block text-lg font-medium mb-2 text-gray-300">Amount (Ghc):</label>
+        <input type="number" id="withdraw-amount" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500" placeholder="Enter amount" />
+      
+        <label for="withdraw-method" class="block text-lg font-medium mt-4 mb-2 text-gray-300">Withdrawal Method:</label>
+        <select id="withdraw-method" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500">
+          <option value="">Select a method</option>
+          <option value="crypto">Crypto</option>
+          <option value="mobile-money">Mobile Money</option>
+          <option value="bank">Bank Transfer</option>
+        </select>
+      
+        <label for="payment-address" class="block text-lg font-medium mt-4 mb-2 text-gray-300">Payment Details:</label>
+        <input type="text" id="payment-address" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500" placeholder="Enter your payment details" />
+      
+        <button id="withdraw-button" class="w-full mt-6 bg-gradient-to-r from-blue-500 to-blue-700 py-3 rounded-lg font-semibold text-lg hover:scale-105 transition-all text-white shadow-lg">
+          Submit Withdrawal Request
+        </button>
+      
+        <p id="withdraw-message" class="mt-6 text-sm text-red-400"></p>
+      </div>
+      
+      
+      <!-- Pending Withdrawals Section -->
+      <div id="withdhistory" class="mt-10 bg-gradient-to-br from-gray-800 to-gray-800  border border-gray-700 shadow-lg rounded-2xl p-6 rounded-xl shadow-xl border border-gray-700">
+        <h3 class="text-3xl font-bold mb-6 text-gray-200">Withdrawal History</h3>
+        <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+          <ul id="pending-withdrawals" class="space-y-4">
+            <li class="flex items-center justify-between p-4 bg-blue-600 text-white rounded-lg">
+              <span>No withdrawals yet.</span>
+              <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-400 transition">Refresh</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      
+      
+      
+    
+      </div>
+
+  
+</div>
+  </div>
+  <script src="footerp.js"></script>
+  <div id="footer-container"></div>
+  <style>
+    /* Custom Keyframe Animation for Text Fade-In */
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
+    /* Apply Animation to the Text */
+    .animate-text-fade {
+      animation: fadeIn 1s ease-out;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+      authDomain: "profstudymate-6d0fc.firebaseapp.com",
+      projectId: "profstudymate",
+      storageBucket: "profstudymate.appspot.com",
+      messagingSenderId: "141453158869",
+      appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const userId = user.uid;
+    await fetchReferralData(userId);
+    await fetchPendingWithdrawals(userId);
+  } else {
+    console.log("No user is signed in. Redirecting...");
+    window.location.href = "account.html"; // Redirect to account.html if user is not authenticated
+  }
+});
+
+async function fetchReferralData(userId) {
+  try {
+    const siteUrl = window.location.origin; // Gets the base URL
+    const referralLink = `${siteUrl}/account.html?referral=${userId}`;
+    document.getElementById("referral-link").href = referralLink;
+    document.getElementById("referral-link").textContent = referralLink;
+
+
+       // Copy to clipboard functionality
+       document.getElementById("copy-referral").addEventListener("click", () => {
+      navigator.clipboard
+        .writeText(referralLink)
+        .then(() => alert("✅ Referral link copied!"))
+        .catch(() => alert("❌ Failed to copy"));
+    });
+    // Fetch from Firestore if cache is expired or missing
+    console.log("Fetching new data");
+    const userDoc = doc(db, "users", userId);
+    const docSnapshot = await getDoc(userDoc);
+
+    if (docSnapshot.exists()) {
+      const userData = docSnapshot.data();
+
+      // Cache the new data
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({ timestamp: Date.now(), data: userData })
+      );
+
+      updateUI(userData);
+    } else {
+      console.error("No user data found!");
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
+}
+
+// Update UI with data
+function updateUI(userData) {
+  animateCount("total-referrals", 0, userData.totalrefs, 2000);
+  animateCount("total-earnings", 0, userData.earnings, 2500);
+  animateCount("total-withdrawals", 0, 0, 2000);
+
+  const referralLinkElement = document.getElementById("referral-link");
+  referralLinkElement.textContent = userData.affiliatelink || "N/A";
+
+  // Copy to clipboard functionality
+  document.getElementById("copy-referral").addEventListener("click", copyReferralLink);
+  document.getElementById("copy-referral1").addEventListener("click", copyReferralLink);
+}
+
+
+
+// Count animation function
+function animateCount(elementId, start, end, duration) {
+  let startTime = null;
+  const element = document.getElementById(elementId);
+  const step = (timestamp) => {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / duration, 1);
+    const currentValue = Math.floor(progress * (end - start) + start);
+    element.innerText = currentValue.toLocaleString();
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+
+async function fetchPendingWithdrawals(userId) {
+  try {
+    const cacheKey = `pendingWithdrawals_${userId}`;
+    const cacheExpiry = 5 * 60 * 1000; // 5 minutes
+
+    // Check if cached data exists and is still valid
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+      const { timestamp, data } = JSON.parse(cachedData);
+      if (Date.now() - timestamp < cacheExpiry) {
+        console.log("Using cached withdrawal data");
+        updateWithdrawalsUI(data);
+        return;
+      }
+    }
+
+    // Fetch from Firestore if cache is expired or missing
+    console.log("Fetching new withdrawal data");
+    const withdrawalsQuery = query(
+      collection(db, "withdrawals"),
+      where("userId", "==", userId)
+    );
+    const querySnapshot = await getDocs(withdrawalsQuery);
+
+    let withdrawals = [];
+    if (!querySnapshot.empty) {
+      querySnapshot.forEach((doc) => {
+        withdrawals.push(doc.data());
+      });
+
+      // Cache the new data
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({ timestamp: Date.now(), data: withdrawals })
+      );
+    }
+
+    updateWithdrawalsUI(withdrawals);
+  } catch (error) {
+    console.error("Error fetching pending withdrawals:", error);
+  }
+}
+
+// Update UI with withdrawals data
+function updateWithdrawalsUI(withdrawals) {
+  const pendingList = document.getElementById("pending-withdrawals");
+  pendingList.innerHTML = "";
+
+  if (withdrawals.length > 0) {
+    withdrawals.forEach((data) => {
+      const listItem = document.createElement("li");
+      listItem.className = "bg-gray-700 p-6 rounded-lg shadow-lg";
+      listItem.innerHTML = `
+        <strong>Amount:</strong> Ghc${data.amount} |
+        <strong>Method:</strong> ${data.method} |
+        <strong>Address:</strong> ${data.paymentaddress} |
+        <strong>Date:</strong> ${new Date(data.timestamp.seconds * 1000).toLocaleString()} |
+        <span class="inline-block py-1 px-4 rounded text-white ${
+          data.status === "pending" ? "bg-red-500" : "bg-green-500"
+        }">${data.status}</span>
+      `;
+      pendingList.appendChild(listItem);
+    });
+  } else {
+    pendingList.innerHTML = `<li class="text-gray-500">No pending withdrawals.</li>`;
+  }
+}
+
+
+    document.getElementById("withdraw-button").addEventListener("click", async () => {
+      const withdrawAmount = parseFloat(document.getElementById("withdraw-amount").value);
+      const paymentaddress = document.getElementById("payment-address").value;
+      const withdrawMethod = document.getElementById("withdraw-method").value;
+      const messageElement = document.getElementById("withdraw-message");
+
+      if (isNaN(withdrawAmount) || withdrawAmount <= 0) {
+        messageElement.textContent = "Please enter a valid amount.";
+        return;
+      }
+
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const userId = user.uid;
+          const userDoc = doc(db, "users", userId);
+          const docSnapshot = await getDoc(userDoc);
+
+          if (docSnapshot.exists()) {
+            const userData = docSnapshot.data();
+            const currentEarnings = userData.earnings || 0;
+
+            if (withdrawAmount > currentEarnings) {
+              messageElement.textContent = "Insufficient earnings to withdraw this amount.";
+            } else {
+              const newEarnings = currentEarnings - withdrawAmount;
+              await updateDoc(userDoc, { earnings: newEarnings });
+
+              await addDoc(collection(db, "withdrawals"), {
+                userId,
+                amount: withdrawAmount,
+                method: withdrawMethod,
+                paymentaddress,
+                status: "pending",
+                timestamp: new Date(),
+              });
+
+              messageElement.textContent = "Withdrawal request submitted successfully!";
+              await fetchReferralData(userId);
+              await fetchPendingWithdrawals(userId);
+            }
+          } else {
+            messageElement.textContent = "User data not found.";
+          }
+        } else {
+          messageElement.textContent = "User is not logged in.";
+        }
+      } catch (error) {
+        console.error("Error processing withdrawal:", error);
+        messageElement.textContent = "Error processing withdrawal. Please try again.";
+      }
+    });
+  </script>
+   <script>
+    AOS.init();
+  </script>
+<script>
+  function scrollToSection(id) { 
+    window.scrollTo({
+      top: document.getElementById(id).offsetTop,
+      behavior: 'smooth', 
+    });
+  }
+
+  document.querySelectorAll('button').forEach(button => {
+    button.addEventListener('mouseover', () => {
+      button.classList.add('scale-105');
+    });
+    button.addEventListener('mouseleave', () => {
+      button.classList.remove('scale-105');
+    });
+  });
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+navigator.serviceWorker.register("sw.js").then(() => {
+  console.log("Service Worker Registered");
+});
+}
+
+</script>
+
+</body>
+</html>

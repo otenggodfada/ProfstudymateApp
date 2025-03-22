@@ -1,0 +1,202 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script
+      defer
+      src="https://unpkg.com/framer-motion@4.1.17/dist/framer-motion.umd.js"
+    ></script>
+    <script type="module" src="navbar.js"></script>
+    <script type="module" src="./dynamiccon.js"></script>
+    <script src="bottomnv.js"></script>
+    <script src="kaka.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script type="module" src="nava-links.js"></script>
+    <style>
+      .glass {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-900">
+    <div class="bg-[#172554] z-20 fixed w-screen top-0">
+      <div id="navbar-container"></div>
+    </div>
+
+    <div class="p-2 mb-20 mt-48 w-full flex justify-center">
+      <div
+        class="mt-10 w-full  max-w-3xl bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6 text-center border text-white border-white/20"
+      >
+   
+        <motion.div
+          class="relative overflow-hidden rounded-lg"
+          animate="{ opacity: 1, y: 0 }"
+          initial="{ opacity: 0, y: -20 }"
+          transition="{ duration: 0.5 }"
+        >
+          <img
+            id="photo"
+            class="w-36 h-36 rounded-full border-4 border-white shadow-xl mx-auto -mt-20 transition duration-300 hover:scale-105"
+            src="https://lh3.googleusercontent.com/UQ87KPOblgk0PB0NTpQ_WtKY4KlNCSeBoCULytIy6tkkh4YWqpRCHA4a8igNziYicM-1AcKDJFWGDWeXgUoNDeOm21_gZt87TYBn0A=rw"
+            alt="Profile Picture"
+          />
+        </motion.div>
+
+        <div class="mt-4">
+          <h2 id="role" class="text-xl font-medium text-gray-300 flex items-center justify-center gap-2">
+            <i data-lucide="database"></i> <span>User Role</span>
+          </h2>
+          <h2 id="name" class="text-3xl font-semibold text-white mt-2 flex items-center justify-center gap-2">
+            <i data-lucide="user"></i> <span>John Doe</span>
+          </h2>
+          <p id="email" class="text-lg text-gray-400 mt-1 flex items-center justify-center gap-2">
+            <i data-lucide="mail"></i> <span>johndoe@example.com</span>
+          </p>
+        
+          <a href="editprofile.html"
+            class="mt-5 px-5 py-3 bg-[#172554] border rounded-md hover:bg-blue-600 transition duration-300 shadow-lg flex items-center justify-center gap-2">
+            <i data-lucide="edit"></i> Edit Profile
+          </a>
+        </div>
+        
+      </div>
+    </div>
+
+    <footer>
+      <div
+        class="fixed z-50 bottom-0 right-0 left-0"
+        id="navbar-container1"
+      ></div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+      import {
+        getFirestore,
+        doc,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+        authDomain: "profstudymate-6d0fc.firebaseapp.com",
+        projectId: "profstudymate",
+        storageBucket: "profstudymate.appspot.com",
+        messagingSenderId: "141453158869",
+        appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            const userId = user.uid;
+            const userDoc = doc(db, "users", userId);
+
+            getDoc(userDoc)
+              .then((docSnap) => {
+                if (docSnap.exists()) {
+                  const userData = docSnap.data();
+                  if (userData.role && !userData.role.includes("student")) {
+                    document
+                      .getElementById("name")
+                      .querySelector("span").textContent =
+                      userData.name || "N/A";
+                    document
+                      .getElementById("email")
+                      .querySelector("span").textContent =
+                      userData.email || "N/A";
+
+                    document.getElementById("photo").src =
+                      userData.photoURL ||
+                      "https://lh3.googleusercontent.com/UQ87KPOblgk0PB0NTpQ_WtKY4KlNCSeBoCULytIy6tkkh4YWqpRCHA4a8igNziYicM-1AcKDJFWGDWeXgUoNDeOm21_gZt87TYBn0A=rw";
+                  }
+                  if (userData.role && !userData.role.includes("author")) {
+                    document
+                      .getElementById("role")
+                      .querySelector("span").textContent =
+                      userData.role || "N/A";
+                    document
+                      .getElementById("name")
+                      .querySelector("span").textContent =
+                      userData.name || "N/A";
+                    document
+                      .getElementById("email")
+                      .querySelector("span").textContent =
+                      userData.email || "N/A";
+                    document.getElementById("photo").src =
+                      userData.photoURL ||
+                      "https://lh3.googleusercontent.com/UQ87KPOblgk0PB0NTpQ_WtKY4KlNCSeBoCULytIy6tkkh4YWqpRCHA4a8igNziYicM-1AcKDJFWGDWeXgUoNDeOm21_gZt87TYBn0A=rw";
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log("Error getting document:", error);
+              });
+          } else {
+            window.location.href = "./account.html";
+          }
+        });
+      });
+    </script>
+    <script>
+      lucide.createIcons();
+    </script>
+
+    <script>
+      function openFullScreen(sectionIndex, lessonIndex) {
+        const videoContainer = document.querySelector(
+          `#lesson-details-\${sectionIndex}-\${lessonIndex} iframe`
+        );
+        const content = videoContainer
+          ? videoContainer.outerHTML
+          : "No video available";
+
+        document.getElementById("fullscreen-content").innerHTML = content;
+        document
+          .getElementById("fullscreen-overlay")
+          .classList.remove("hidden");
+      }
+
+      function closeFullScreen() {
+        document.getElementById("fullscreen-overlay").classList.add("hidden");
+        document.getElementById("fullscreen-content").innerHTML = "";
+      }
+    </script>
+    <script>
+      window.addEventListener("load", () => {
+        const loadingScreen = document.getElementById("loadingScreen");
+        loadingScreen.classList.add("opacity-0");
+        setTimeout(() => {
+          loadingScreen.style.display = "none";
+        }, 500); // Wait for fade-out transition
+      });
+    </script>
+    <!-- Loading Screen -->
+    <div
+      id="loadingScreen"
+      class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-500 opacity-100"
+    >
+      <div
+        class="loader border-t-4 border-blue-500 border-solid rounded-full w-16 h-16 animate-spin"
+      ></div>
+    </div>
+  </body>
+</html>

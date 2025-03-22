@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="nava-links.js"></script>
+    <script type="module">
+        // Firebase SDK Import
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Firebase Config (Replace with your actual config)
+        const firebaseConfig = {
+          apiKey: "AIzaSyCtaftgrL4p4wqNC2w211mUi8amkjw2kzM",
+        authDomain: "profstudymate-6d0fc.firebaseapp.com",
+        projectId: "profstudymate",
+        storageBucket: "profstudymate.appspot.com",
+        messagingSenderId: "141453158869",
+        appId: "1:141453158869:web:d4ded426a90e9937e2f55c",
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function fetchFormAction() {
+            const docRef = doc(db, "formkey", "formkey1");
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                document.getElementById("contactForm").action = docSnap.data().key1;
+                document.getElementById("loadingScreen").classList.add("hidden");
+            } else {
+                console.error("No form action found in Firebase!");
+                document.getElementById("loadingScreen").classList.add("hidden");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchFormAction);
+    </script>
+     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+     <script type="module" src="./dynamiccon.js"></script>
+     <script type="module" src="./navbar.js"></script>
+     <script src="bottomnv.js"></script>
+     <script src="kaka.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen  ">
+  <div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
+    <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-16 h-16 animate-spin"></div>
+  </div>
+  <div class="fixed top-0 bg-[#172554] z-20 w-full">
+    <div id="navbar-container"></div>
+  </div>
+  <div class="flex flex-col items-center">
+    <div class="w-full max-w-4xl px-4 mt-36 mb-36 ">
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-blue-900 to-purple-900 text-center p-10 mb-10">
+            <h2 class="text-4xl font-extrabold">Contact Us</h2>
+            <p class="mt-2 text-gray-300">Make learning and teaching more effective with active participation and student collaboration</p>
+        </div>
+
+        <!-- Contact Form & Details -->
+        <div class="grid md:grid-cols-2 gap-10">
+            <!-- Contact Form -->
+            <div>
+                <h3 class="text-2xl font-bold mb-4">We are always open 24/7 for you.</h3>
+                <form id="contactForm"  method="POST" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-gray-300 font-semibold">Name</label>
+                        <input id="name" type="text" name="name" placeholder="John Doe" required aria-label="Name" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-300 font-semibold">Email</label>
+                        <input id="email" type="email" name="email" placeholder="name@example.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" aria-label="Email" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="subject" class="block text-gray-300 font-semibold">Subject</label>
+                        <input id="subject" type="text" name="subject" placeholder="Subject" required aria-label="Subject" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="description" class="block text-gray-300 font-semibold">Description</label>
+                        <textarea id="description" name="description" placeholder="Write your message" required aria-label="Description" class="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 h-32 resize-none"></textarea>
+                    </div>
+                    <button type="submit"  class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg text-lg font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105">Send Message</button>
+                </form>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-2xl font-bold">Call Us</h3>
+                    <p class="mt-1 text-gray-400 leading-relaxed">0243443934<br>0246752130<br>0244990773</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold">Email Us</h3>
+                    <p class="mt-1 text-gray-400 leading-relaxed">profstraining52@gmail.com<br>profsa35@gmail.com</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold">Visit Us</h3>
+                    <p class="mt-1 text-gray-400 leading-relaxed">Fefeti Drive, Spintex Road<br>Tema, Greater Accra</p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+ 
+    <div id="footer-container"></div>
+    <script src="footerp.js"></script>
+</body>
+
+</html>

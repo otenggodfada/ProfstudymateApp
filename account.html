@@ -1,0 +1,222 @@
+<!-- @format -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Authentication</title>
+    <link rel="stylesheet" href="https://cdn.tailwindcss.com" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="kaka.js"></script>
+  </head>
+  <body
+    class="bg-gray-900 text-white min-h-screen  "
+  >
+  <div class=" bg-[#172554] fixed  top-0 z-20 w-full">
+    <div id="navbar-container"></div>
+  </div>
+    <div
+      id="account-modal"
+      class="fixed inset-0 flex z-50 justify-center items-center overflow-auto   bg-black/50 p-4"
+    >
+      <div
+        class="relative max-w-lg w-full bg-[#242525] p-8 rounded-2xl border border-gray-600 mt-48 mb-32 shadow-xl"
+      >
+        <button
+          id="close-modal"
+          class="absolute top-4 right-4 text-gray-300 text-3xl"
+        >
+          &times;
+        </button>
+        <div id="create-account-section">
+          <h2 class="text-2xl font-semibold text-center mb-6">
+            Create an Account
+          </h2>
+          <form  id="account-form" class="space-y-4">
+            <div>
+            
+              <select
+              required
+                id="user-type"
+                name="user-type"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled selected>Select your role</option>
+                <option value="student">Student</option>
+                <option value="author">Author</option>
+              </select>
+            </div>
+            <div>
+             
+              <input
+placeholder="Full name"
+                type="text"
+                id="full-name"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+             
+              <input
+              placeholder="Email address"
+                type="email"
+                id="email"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+           
+              <input
+               
+              placeholder="Tel"
+                type="tel"
+                id="telephone"
+                class=" w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500 "
+                required
+              />
+            </div>
+            <div>
+            
+              <input
+              placeholder="Password"
+                type="password"
+                id="password"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+            
+              <input
+              placeholder="Referral code"
+                type="text"
+                id="referral"
+             
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div id="author-fields" class="hidden">
+             
+              <input
+              placeholder="Zoom Invitation link"
+                type="text"
+                id="zoom-id"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500 "
+              />
+            </div>
+            <p class="text-center mt-4">
+              By signing up, I agree with the website's
+              <a href="terms_conditions.html"  class="text-blue-400 underline"> Terms and Conditions</a>
+            </p>
+            <button
+              type="submit"
+              class="w-full p-3 mt-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+            >
+              Create Account
+            </button>
+          </form>
+          <p class="text-center mt-4">
+            Already have an account?
+            <a href="#" id="toggle-login" class="text-blue-400">Login</a>
+          </p>
+        
+        </div>
+        <div id="login-section" class="hidden">
+          <h2 class="text-2xl font-semibold text-center mb-6">
+            Login to Your Account
+          </h2>
+          <form id="login-form" class="space-y-4">
+            <div>
+             
+              <input
+              placeholder="Email address"
+                type="email"
+                id="login-email"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+            
+              <input
+              
+              placeholder="Password"
+                type="password"
+                id="login-password"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              class="w-full p-3 mt-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+            >
+              Login
+            </button>
+          </form>
+          <p class="text-center mt-4">
+            Don't have an account yet?
+            <a href="#" id="toggle-create" class="text-blue-400"
+              >Register Now</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("user-type")
+        .addEventListener("change", function () {
+          document
+            .getElementById("author-fields")
+            .classList.toggle("hidden", this.value !== "author");
+        });
+      document
+        .getElementById("close-modal")
+        .addEventListener("click", function () {
+          window.location.href = "./index.html";
+        });
+      document
+        .getElementById("toggle-login")
+        .addEventListener("click", function () {
+          document
+            .getElementById("create-account-section")
+            .classList.add("hidden");
+          document.getElementById("login-section").classList.remove("hidden");
+        });
+      document
+        .getElementById("toggle-create")
+        .addEventListener("click", function () {
+          document.getElementById("login-section").classList.add("hidden");
+          document
+            .getElementById("create-account-section")
+            .classList.remove("hidden");
+        });
+
+      // Function to populate referral field from URL
+      function populateReferral() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode = urlParams.get("referral");
+        if (referralCode) {
+          const referralInput = document.getElementById("referral");
+          referralInput.value = referralCode;
+        }
+      }
+
+      // Call the function when the page loads
+      window.addEventListener("DOMContentLoaded", populateReferral);
+    </script>
+     <div id="loading-screen" class="fixed hidden bg-black opacity-60 top-0 right-0 bottom-0 left-0 text-white text-center flex items-center justify-center "><svg class="w-6 h-6 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.93 4.93a10.5 10.5 0 0114.14 0m-14.14 14.14a10.5 10.5 0 0114.14 0M9.17 9.17a5.25 5.25 0 017.66 0m-7.66 7.66a5.25 5.25 0 017.66 0" />
+    </svg></div>
+    <script src="navbar.js"></script>
+    <script type="module" src="./dynamiccon.js"></script>
+  </body>
+</html>
