@@ -99,7 +99,7 @@ option {
    <button id="close-modal" class="absolute top-4 right-4 mb-4 text-center w-14 h-14 bg-gray-500/30 p-3 rounded-full text-2xl text-gray-500 hover:text-white hover:bg-red-600 transition-all">&times;</button>
       
   <!-- Course Image -->
-  <div class="mb-6 sm:hidden">
+  <div class="mb-6 ">
     <img id="modal-image" src="" alt="Course Image" class="w-full  object-cover " />
 </div>
 
@@ -639,7 +639,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const courseSnapshot = await query.get();
         const courses = await Promise.all(courseSnapshot.docs.map(async (doc) => {
             let courseData = { id: doc.id, ...doc.data() };
-
+   // Skip courses with status "draft"
+   if (courseData.status === "draft") {
+                return null;
+            }
             // Fetch category details
             if (courseData.cat_id) {
                 const cateRef = db.collection("categories").doc(courseData.cat_id);
@@ -652,7 +655,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return courseData;
         }));
 
-        return courses;
+             // Filter out null values (draft courses)
+             return courses.filter(course => course !== null);
         
     } catch (error) {
         console.error("Error fetching courses:", error);
@@ -1597,7 +1601,7 @@ document.addEventListener("click", (event) => {
   function updateShareLinks() {
     const title = document.getElementById("modal-title").innerText;
     const courseId = document.getElementById("modal1-id").innerText;
-    const siteUrl = window.location.origin; // Get the base site URL
+    const siteUrl = 'https://profstudymate.com/' // Get the base site URL
     const url = `${siteUrl}/courses.html?courseid=${courseId}`;
     
     document.getElementById("share-facebook").href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
@@ -1646,23 +1650,39 @@ function loadVideo(videoUrl) {
         return;
     }
 
-    // Check if the video is a YouTube link
-    if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-        // Convert YouTube watch link to embed link if needed
-        if (videoUrl.includes("watch?v=")) {
-            videoUrl = videoUrl.replace("watch?v=", "embed/");
-        }
+  // Check if the video is a YouTube or Google Drive link
+if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+    // Convert YouTube watch link to embed link if needed
+    if (videoUrl.includes("watch?v=")) {
+        videoUrl = videoUrl.replace("watch?v=", "embed/");
+    }
 
-        // Show iframe for YouTube
+    // Show iframe for YouTube
+    videoIframe.src = videoUrl;
+    videoIframe.style.display = "block";
+    videoElement.style.display = "none";
+
+} else if (videoUrl.includes("drive.google.com")) {
+    // Extract Google Drive File ID
+    const driveRegex = /\/file\/d\/(.*?)\/view/;
+    const match = videoUrl.match(driveRegex);
+
+    if (match) {
+        const fileId = match[1];
+        videoUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+
+        // Show iframe for Google Drive video
         videoIframe.src = videoUrl;
         videoIframe.style.display = "block";
         videoElement.style.display = "none";
-    } else {
-        // Assume it's a Firebase Storage video (MP4, WebM, etc.)
-        videoElement.src = videoUrl;
-        videoElement.style.display = "block";
-        videoIframe.style.display = "none";
     }
+} else {
+    // Assume it's a Firebase Storage video (MP4, WebM, etc.)
+    videoElement.src = videoUrl;
+    videoElement.style.display = "block";
+    videoIframe.style.display = "none";
+}
+
 }
 
 // Example usage: Fetch video URL from Firebase and load it

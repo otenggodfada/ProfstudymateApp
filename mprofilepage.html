@@ -37,29 +37,47 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "./account.html";
+
+
+
+    document.addEventListener("DOMContentLoaded", async function () {
+    const storedUserId = localStorage.getItem("userId");
+
+    if (!storedUserId) {
+        window.location.href = "account.html"; // Redirect if userId is not set
         return;
-      }
+    }
 
-      const userNameElement = document.getElementById("userName");
-      const adminPanelLink = document.getElementById("adminPanelLink");
-      const userDocRef = doc(db, "users", user.uid);
-      const userDocSnap = await getDoc(userDocRef);
+    document.getElementById('loadingScreen').classList.add('hidden'); // Hide loading screen
 
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        userNameElement.textContent = `Welcome, ${userData.name || "User"}!`;
-        if (userData.role && !userData.role.includes("student")) {
-          adminPanelLink.style.display = "flex";
+    try {
+        const userNameElement = document.getElementById("userName");
+        const adminPanelLink = document.getElementById("adminPanelLink");
+        const userDocRef = doc(db, "users", storedUserId);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            userNameElement.textContent = `Welcome, ${userData.name || "User"}!`;
+            if (userData.role && !userData.role.includes("student") && !userData.role.includes("pending")) {
+                adminPanelLink.style.display = "flex";
+            }
         }
-      }document.getElementById('loadingScreen').style.display = 'none';
-    });
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+    } finally {
+        document.getElementById('loadingScreen').classList.add('hidden'); // Ensure loading screen is hidden
+    }
+});
+
+
+
+
 
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("signOut").addEventListener("click", () => {
         signOut(auth).then(() => {
+          localStorage.removeItem("userId");
           window.location.href = "./account.html";
         });
       });
@@ -67,6 +85,10 @@
   </script>
 </head>
 <body class="bg-gray-900  ">
+    <!-- Loading Screen -->
+<div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-500 opacity-100">
+  <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-16 h-16 animate-spin"></div>
+</div>
   <script src="dark-mode.js"></script>
   <!-- Navbar -->
   <div class="bg-[#172554]  sticky top-0 w-screen z-20">
@@ -134,10 +156,7 @@
     </div>
 </div>
   
-  <!-- Loading Screen -->
-<div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-500 opacity-100">
-  <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-16 h-16 animate-spin"></div>
-</div>
+
 
   <!-- Bottom Navigation -->
   <footer>

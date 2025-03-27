@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Referral Dashboard</title>
+  <title>Affiliate Dashboard</title>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js"></script>
@@ -21,6 +21,10 @@
   <script src="animatescript.js" defer></script>
 </head>
 <body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white ">
+    <!-- Loading Screen -->
+<div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50 transition-opacity duration-500 opacity-100">
+  <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-16 h-16 animate-spin"></div>
+</div>
   <div class="sticky bg-[#172554] top-0 z-20 w-full">
     <div id="navbar-container"></div>
   </div>
@@ -32,7 +36,7 @@
         <!-- Left Section -->
         <div class="flex-1 text-center md:text-left">
           <h1 class="text-4xl font-extrabold text-white leading-tight">
-            🚀 Refer & Earn <span class="text-blue-400">20% Commission</span>
+            🚀 Refer & Earn <span class="text-blue-400">10% Commission</span>
           </h1>
           <p class="text-gray-300 mt-3 text-lg">
             Introduce students & earn rewards on all their purchases. Your success starts here! 🎯
@@ -40,9 +44,9 @@
       
           <!-- Referral Copy -->
           <div class="mt-6 flex flex-col sm:flex-row items-center gap-3">
-            <a id="referral-link" href="#" class="text-blue-400 text-lg bg-gray-800 px-5 py-2 rounded-lg transition hover:bg-gray-700">
+            <p id="referral-link"  class="text-blue-400 text-lg bg-gray-800 px-5 py-2 rounded-lg transition hover:bg-gray-700">
               Generating link...
-            </a>
+            </p>
             <button id="copy-referral" class="flex items-center gap-2 px-5 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition">
               <i class="fas fa-copy"></i> Copy Link
             </button>
@@ -69,14 +73,18 @@
         
           <!-- Total Earnings -->
           <div class="bg-gray-900 rounded-lg p-6 flex flex-col items-center fade-in">
-            <p id="total-earnings" class="font-bold text-3xl text-green-400 animate-bounce">Ghc0.00</p>
+     <div class="flex flex-row space-x-2">
+      <p class="font-bold text-3xl text-green-400 ">Ghc</p> <p id="total-earnings" class="font-bold text-3xl text-green-400 "></p>
+     </div>
             <p class="text-gray-400 mt-2">Total Earnings</p>
             <button onclick="scrollToSection('withd')" class="bg-blue-600 text-white px-6 py-3 mt-4 rounded-lg hover:scale-105 transition-all">Withdraw</button>
           </div>
         
           <!-- Total Withdrawals -->
           <div class="bg-gray-900 rounded-lg p-6 flex flex-col items-center fade-in">
-            <p id="total-withdrawals" class="font-bold text-3xl text-red-400 animate-pulse">Ghc0.00</p>
+            <div class="flex flex-row space-x-2">
+              <p class="font-bold text-3xl text-red-400 ">Ghc</p> <p id="total-withdrawals" class="font-bold text-3xl text-red-400 "></p>
+            </div>
             <p class="text-gray-400 mt-2">Total Withdrawals</p>
             <button onclick="scrollToSection('withdhistory')" class="bg-blue-600 text-white px-6 py-3 mt-4 rounded-lg hover:scale-105 transition-all">View</button>
           </div>
@@ -174,6 +182,7 @@
 
     onAuthStateChanged(auth, async (user) => {
   if (user) {
+    document.getElementById('loadingScreen').classList.add('hidden')
     const userId = user.uid;
     await fetchReferralData(userId);
     await fetchPendingWithdrawals(userId);
@@ -185,33 +194,24 @@
 
 async function fetchReferralData(userId) {
   try {
-    const siteUrl = window.location.origin; // Gets the base URL
+    const siteUrl = 'https://profstudymate.com';
     const referralLink = `${siteUrl}/account.html?referral=${userId}`;
     document.getElementById("referral-link").href = referralLink;
     document.getElementById("referral-link").textContent = referralLink;
 
-
-       // Copy to clipboard functionality
-       document.getElementById("copy-referral").addEventListener("click", () => {
+    document.getElementById("copy-referral").addEventListener("click", () => {
       navigator.clipboard
         .writeText(referralLink)
         .then(() => alert("✅ Referral link copied!"))
         .catch(() => alert("❌ Failed to copy"));
     });
-    // Fetch from Firestore if cache is expired or missing
-    console.log("Fetching new data");
+
+    console.log("Fetching fresh user data...");
     const userDoc = doc(db, "users", userId);
     const docSnapshot = await getDoc(userDoc);
 
     if (docSnapshot.exists()) {
       const userData = docSnapshot.data();
-
-      // Cache the new data
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify({ timestamp: Date.now(), data: userData })
-      );
-
       updateUI(userData);
     } else {
       console.error("No user data found!");
@@ -253,25 +253,9 @@ function animateCount(elementId, start, end, duration) {
   window.requestAnimationFrame(step);
 }
 
-
 async function fetchPendingWithdrawals(userId) {
   try {
-    const cacheKey = `pendingWithdrawals_${userId}`;
-    const cacheExpiry = 5 * 60 * 1000; // 5 minutes
-
-    // Check if cached data exists and is still valid
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-      const { timestamp, data } = JSON.parse(cachedData);
-      if (Date.now() - timestamp < cacheExpiry) {
-        console.log("Using cached withdrawal data");
-        updateWithdrawalsUI(data);
-        return;
-      }
-    }
-
-    // Fetch from Firestore if cache is expired or missing
-    console.log("Fetching new withdrawal data");
+    console.log("Fetching fresh withdrawal data...");
     const withdrawalsQuery = query(
       collection(db, "withdrawals"),
       where("userId", "==", userId)
@@ -283,12 +267,6 @@ async function fetchPendingWithdrawals(userId) {
       querySnapshot.forEach((doc) => {
         withdrawals.push(doc.data());
       });
-
-      // Cache the new data
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify({ timestamp: Date.now(), data: withdrawals })
-      );
     }
 
     updateWithdrawalsUI(withdrawals);

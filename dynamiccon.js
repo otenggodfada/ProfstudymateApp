@@ -95,21 +95,21 @@ ${trimmedName}
   }
 });
 
-document
-  .getElementById("toggle-login")
-  .addEventListener("click", function (event) {
-    event.preventDefault();
-    document.getElementById("create-account-section").style.display = "none";
-    document.getElementById("login-section").style.display = "block";
-  });
+document.addEventListener("DOMContentLoaded", function () {
+  const toggleLogin = document.getElementById("toggle-login");
+  if (toggleLogin) {
+    toggleLogin.addEventListener("click", function (event) {
+      event.preventDefault();
+      document.getElementById("create-account-section").style.display = "none";
+      document.getElementById("login-section").style.display = "block";
+    });
+  } else {
+    console.error("Element #toggle-login not found!");
+  }
+});
 
-document
-  .getElementById("toggle-create")
-  .addEventListener("click", function (event) {
-    event.preventDefault();
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("create-account-section").style.display = "block";
-  });
+
+
 // Function to handle account creation form submission
 document
   .getElementById("account-form")
@@ -118,10 +118,11 @@ document
     e.preventDefault();
 
     const name = document.getElementById("full-name").value;
+    const registn = document.getElementById("reg-number").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
     const telephone = document.getElementById("telephone").value;
-    const referralcode = document.getElementById("referral").value;
+    const referralcode = document.getElementById("referral").value||'YM9J45qmiggNlMC4HpJZbXtn1CM2';
     const userType = document.getElementById("user-type").value; // Get the selected user type (student or author)
 
     // Author-specific fields (if user is an author)
@@ -136,16 +137,20 @@ document
         password
       );
       const user = userCredential.user;
-
+      localStorage.setItem("userId", user.uid);
       // Save additional author-specific data to Firestore or Realtime Database
       if (userType === "author") {
         await setDoc(doc(db, "users", user.uid), {
           name,
           email,
           telephone,
+          underef: referralcode,
+          affiliatelink: user.uid,
+          earnings: 0,
+          totalrefs: 0,
           zoomId,
       status: "Offline",
-          role: ['author'],
+          role: ['pending'],
         });
       } else {
         // Save student-specific data if needed
@@ -153,6 +158,7 @@ document
           name,
           email,
           telephone,
+          registern: registn,
           role: ['student'],
           underef: referralcode,
           affiliatelink: user.uid,
@@ -218,6 +224,8 @@ document.getElementById("login-form").addEventListener("submit", async (e) => { 
       email,
       password
     );
+    const user = userCredential.user;
+    localStorage.setItem("userId", user.uid);
     // Login successful
     console.log("User logged in:", userCredential.user.email);
 showSuccessToast1()
