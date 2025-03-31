@@ -17,6 +17,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -31,6 +32,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+
 
 onAuthStateChanged(auth, (user) => {
   document.getElementById("signOut").addEventListener("click", () => {
@@ -95,6 +98,36 @@ ${trimmedName}
   }
 });
 
+
+ // Handle form submission
+ document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("reset-form").addEventListener("submit", (event) => {
+      event.preventDefault(); // Prevent page reload
+
+      const email = document.getElementById("reset-email").value;
+      const message = document.getElementById("message");
+
+      if (email.trim() === "") {
+          message.innerText = "Please enter your email.";
+          message.classList.remove("text-green-500");
+          message.classList.add("text-red-500");
+          return;
+      }
+
+      sendPasswordResetEmail(auth, email)
+          .then(() => {
+              message.innerText = "Password reset email sent!";
+              message.classList.remove("text-red-500");
+              message.classList.add("text-green-500");
+          })
+          .catch((error) => {
+              message.innerText = error.message;
+              message.classList.remove("text-green-500");
+              message.classList.add("text-red-500");
+          });
+  });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const toggleLogin = document.getElementById("toggle-login");
   if (toggleLogin) {
@@ -109,14 +142,21 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
+document
+  .getElementById("toggle-create")
+  .addEventListener("click", function (event) {
+    event.preventDefault();
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("create-account-section").style.display = "block";
+  });
 // Function to handle account creation form submission
 document
   .getElementById("account-form")
   .addEventListener("submit", async (e) => {
     document.getElementById('loading-screen').classList.remove("hidden");
     e.preventDefault();
-
+   
+       
     const name = document.getElementById("full-name").value;
     const registn = document.getElementById("reg-number").value;
     const email = document.getElementById("email").value;

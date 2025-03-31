@@ -113,13 +113,16 @@ placeholder="Registration number"
               />
             </div>
             <div id="author-fields" class="hidden">
-             
+            <div>
+             Create ZoomLInk <span id="unhide-zoom" class="text-blue-500" >Here</span> 
+            </div>
               <input
               placeholder="Zoom Invitation link"
                 type="text"
                 id="zoom-id"
                 class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500 "
               />
+           
             </div>
             <p class="text-center mt-4">
               By signing up, I agree with the website's
@@ -138,6 +141,7 @@ placeholder="Registration number"
           </p>
         
         </div>
+        <!-- Login Section -->
         <div id="login-section" class="hidden">
           <h2 class="text-2xl font-semibold text-center mb-6">
             Login to Your Account
@@ -164,6 +168,13 @@ placeholder="Registration number"
                 required
               />
             </div>
+
+            <p class="text-center mt-4">
+              Forgot Password?
+              <a href="#" id="toggle-reset" class="text-blue-400"
+                >Reset</a
+              >
+            </p>
             <button
               type="submit"
               class="w-full p-3 mt-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
@@ -178,9 +189,70 @@ placeholder="Registration number"
             >
           </p>
         </div>
+<!-- Reset Section -->
+        <div id="reset-section" class="hidden ">
+          <h2 class="text-2xl font-semibold text-center mb-6 mt-10">
+            Reset Your Account
+          </h2>
+          <form id="reset-form" class="space-y-4">
+            <div>
+             
+              <input
+              placeholder="Email address"
+                type="email"
+                id="reset-email"
+                class="w-full mt-1 p-3 rounded-lg bg-[#242525] border border-gray-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <p id="message"></p>
+            </div>
+       
+
+      
+            <button
+              type="submit"
+              class="w-full p-3 mt-4 bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+            >
+              Reset
+            </button>
+          </form>
+       
+        </div>
       </div>
+
+      
+
+      <div id="zoom-inv" class="fixed bg-black bg-opacity-80 top-0 left-0 bottom-0 w-screen h-screen flex justify-center items-center overflow-y-auto hidden ">
+        <div class="max-w-md mx-auto bg-gradient-to-r from-indigo-600 to-purple-700 p-8 rounded-3xl shadow-2xl text-white text-center space-y-6 relative overflow-y-auto mb-48 mt-48">
+          <div class="flex justify-center">
+              <img src="https://fv5-5.files.fm/thumb_show.php?i=4y2mjbe7hs&view&v=1&PHPSESSID=d1c81dd908e350a345f15abddaa35c3e6a73f36d" 
+                  alt="Profile Image" class="">
+          </div>
+          <div id="close-zoom" class="absolute top-4 right-4 text-white bg-black/50 hover:bg-red-700 rounded-full w-10 h-10 flex justify-center items-center shadow-lg cursor-pointer transition-all duration-300 ease-in-out">
+            X
+          </div>
+          
+          <h2 class="text-4xl font-extrabold tracking-wide">Zoom Invitation Link</h2>
+          <p class="text-lg leading-relaxed opacity-90">Get access to your Zoom invitation link! Click below to enter:</p>
+          <a href="https://app.zoom.us/wc/home" 
+              class="inline-block bg-white text-indigo-600 px-8 py-3 rounded-full font-bold text-lg transition-all hover:bg-gray-100 shadow-xl transform hover:scale-105">
+              🚀 Get Link
+          </a>
+        </div>
+      </div>
+      
+
     </div>
     <script>
+
+document.getElementById("unhide-zoom").addEventListener("click", function () {
+    document.getElementById("zoom-inv").classList.remove("hidden");
+});
+
+document.getElementById("close-zoom").addEventListener("click", function () {
+    document.getElementById("zoom-inv").classList.add("hidden");
+});
+
       document
         .getElementById("user-type")
         .addEventListener("change", function () {
@@ -201,6 +273,16 @@ placeholder="Registration number"
             .classList.add("hidden");
           document.getElementById("login-section").classList.remove("hidden");
         });
+
+        document
+        .getElementById("toggle-reset")
+        .addEventListener("click", function () {
+          document
+            .getElementById("login-section")
+            .classList.add("hidden");
+          document.getElementById("reset-section").classList.remove("hidden");
+        });
+
       document
         .getElementById("toggle-create")
         .addEventListener("click", function () {
@@ -214,9 +296,15 @@ placeholder="Registration number"
       function populateReferral() {
         const urlParams = new URLSearchParams(window.location.search);
         const referralCode = urlParams.get("referral");
+     const reff=   localStorage.getItem("referral")
         if (referralCode) {
           const referralInput = document.getElementById("referral");
           referralInput.value = referralCode;
+        } else if (reff){
+
+          const referralInput = document.getElementById("referral");
+          referralInput.value = reff;
+
         }
       }
 
