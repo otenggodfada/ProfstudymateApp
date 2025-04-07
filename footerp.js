@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="mt-6 text-center">
                 <p class="text-lg font-semibold mb-2">📲 Get our study apps now!</p>
                 <div class="flex justify-center space-x-4">
-                    <a href="#" class="hover:scale-105 transition">
+                    <a href="https://play.google.com/store/apps/details?id=profstudymate.appev" class="hover:scale-105 transition">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" class="h-12">
                     </a>
                     <a href="#" class="hover:scale-105 transition">
