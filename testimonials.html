@@ -1,11 +1,16 @@
+<!-- @format -->
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gallery</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
     <script type="module" src="./dynamiccon.js"></script>
     <script type="module" src="./navbar.js"></script>
     <script src="bottomnv.js"></script>
@@ -13,186 +18,490 @@
     <script type="module" src="nava-links.js"></script>
     <script type="module" src="./indexnav.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
 
     <style>
-        .aspect-square { aspect-ratio: 1 / 1; } /* Forces images to be square */
-    </style>
+      .aspect-square {
+        aspect-ratio: 1 / 1;
+      }
 
-</head>
-<div class="sticky top-0 bg-[#172554] z-20 w-full border-b">
+      .testimonial-card {
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.6s ease-out;
+      }
+
+      .testimonial-card.visible {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .quote-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .star-rating {
+        color: #ffd700;
+      }
+    </style>
+  </head>
+  <div class="sticky top-0 bg-[#172554] z-20 w-full border-b">
     <div id="navbar-container"></div>
-</div>
-<body class="bg-gray-900  text-white ">
-    <div id="lightbox" class="fixed p-3 inset-0 z-50 bg-black bg-opacity-80 flex  items-center justify-center hidden">
-        <img id="lightbox-img" class="max-w-full max-h-full rounded-lg">
+  </div>
+  <body class="bg-gray-900 text-white">
+    <!-- Hero Section -->
+    <div class="relative bg-gradient-to-b from-blue-900 to-gray-900 py-20 overflow-hidden">
+      <!-- Animated background particles -->
+      <div class="absolute inset-0 opacity-20"></div>
+        <div class="absolute animate-float-slow left-1/4 top-1/4 w-24 h-24 bg-blue-400 rounded-full blur-xl"></div>
+        <div class="absolute animate-float-medium right-1/3 top-1/2 w-32 h-32 bg-purple-400 rounded-full blur-xl"></div>
+        <div class="absolute animate-float-fast left-1/2 bottom-1/4 w-20 h-20 bg-cyan-400 rounded-full blur-xl"></div>
+      </div>
+
+      <div class="container mx-auto px-6 text-center relative z-10">
+        <h1 class="text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 animate-gradient">
+          Student Success Stories
+        </h1>
+        
+        <p class="text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+          Transforming Dreams into Reality - One Success Story at a Time
+        </p>
+
+        <div class="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div class="transform hover:scale-105 transition-transform duration-300">
+            <div class="relative bg-gradient-to-br from-blue-900/50 to-transparent p-6 rounded-xl backdrop-blur-sm border border-blue-500/30">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 px-4 py-1 rounded-full text-sm font-medium">
+                Graduates
+              </div>
+              <div class="text-5xl font-bold text-blue-400 mb-2 counter" data-target="500">0</div>
+              <p class="text-gray-400">Successful Students</p>
+            </div>
+          </div>
+
+          <div class="transform hover:scale-105 transition-transform duration-300">
+            <div class="relative bg-gradient-to-br from-purple-900/50 to-transparent p-6 rounded-xl backdrop-blur-sm border border-purple-500/30">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-purple-500 px-4 py-1 rounded-full text-sm font-medium">
+                Success Rate
+              </div>
+              <div class="text-5xl font-bold text-purple-400 mb-2 counter" data-target="95">0</div>
+              <p class="text-gray-400">Pass Rate</p>
+            </div>
+          </div>
+
+          <div class="transform hover:scale-105 transition-transform duration-300">
+            <div class="relative bg-gradient-to-br from-cyan-900/50 to-transparent p-6 rounded-xl backdrop-blur-sm border border-cyan-500/30">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 px-4 py-1 rounded-full text-sm font-medium">
+                Excellence
+              </div>
+              <div class="text-5xl font-bold text-cyan-400 mb-2 counter" data-target="50">0</div>
+              <p class="text-gray-400">Award Winners</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        @keyframes float-slow {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(20px, -20px); }
+        }
+        @keyframes float-medium {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-15px, 15px); }
+        }
+        @keyframes float-fast {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(10px, -10px); }
+        }
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+        .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
+        .animate-float-fast { animation: float-fast 3s ease-in-out infinite; }
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient 8s linear infinite;
+        }
+      </style>
+
+      <script>
+        // Animated counter
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+          const target = +counter.getAttribute('data-target');
+          const duration = 2000;
+          const step = target / (duration / 16);
+          
+          function updateCounter() {
+            const current = +counter.innerText;
+            if (current < target) {
+              counter.innerText = Math.ceil(Math.min(current + step, target));
+              setTimeout(updateCounter, 16);
+            }
+          }
+          
+          const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+              updateCounter();
+              observer.unobserve(counter);
+            }
+          });
+          
+          observer.observe(counter);
+        });
+      </script>
     </div>
-    
-    <div class="text-center text-3xl font-bold my-6">Testimonials</div>
-    
-  
+
+
+
+    <!-- Award Winners Section -->
+    <section class="container mx-auto px-6 py-12 bg-gradient-to-b from-gray-900 to-blue-900">
+      <h2 class="text-4xl font-extrabold text-center mb-12"></h2>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center gap-4">
+          <i class="fas fa-trophy text-5xl quote-animation"></i>
+          Hall of Excellence (2020-Present)
+        </span>
+      </h2>
+
+      <div class="max-w-6xl mx-auto">
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Category 1: Outstanding Achievement -->
+          <li class="group">
+            <div class="relative p-6 rounded-2xl bg-gradient-to-br from-blue-900/50 to-transparent backdrop-blur-sm border border-blue-400/50 
+                        shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(59,130,246,0.7)]">
+              <div class="absolute -top-3 -left-3 bg-blue-500 text-white px-4 py-1 rounded-full text-sm">
+                Outstanding Achievement
+              </div>
+              <h3 class="text-2xl font-bold text-white mt-4 flex items-center gap-2">
+                <i class="fas fa-medal text-yellow-400"></i>
+                Felicia Omotoyo
+              </h3>
+              <p class="text-blue-300 mt-2 font-medium">Oil and Gas Taxation</p>
+              <div class="mt-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-star text-yellow-400"></i> First Class Honors
+              </div>
+            </div>
+          </li>
+
+          <!-- Category 2: Academic Excellence -->
+          <li class="group">
+            <div class="relative p-6 rounded-2xl bg-gradient-to-br from-purple-900/50 to-transparent backdrop-blur-sm border border-purple-400/50 
+                        shadow-[0_0_15px_rgba(147,51,234,0.5)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(147,51,234,0.7)]">
+              <div class="absolute -top-3 -left-3 bg-purple-500 text-white px-4 py-1 rounded-full text-sm">
+                Academic Excellence
+              </div>
+              <h3 class="text-2xl font-bold text-white mt-4 flex items-center gap-2">
+                <i class="fas fa-award text-purple-400"></i>
+                Theophilus Nyarko
+              </h3>
+              <p class="text-purple-300 mt-2 font-medium">Strategic Tax Planning</p>
+              <div class="mt-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-trophy text-yellow-400"></i> Department Award
+              </div>
+            </div>
+          </li>
+
+          <!-- Category 3: Innovation -->
+          <li class="group">
+            <div class="relative p-6 rounded-2xl bg-gradient-to-br from-cyan-900/50 to-transparent backdrop-blur-sm border border-cyan-400/50 
+                        shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_rgba(34,211,238,0.7)]">
+              <div class="absolute -top-3 -left-3 bg-cyan-500 text-white px-4 py-1 rounded-full text-sm">
+                Innovation
+              </div>
+              <h3 class="text-2xl font-bold text-white mt-4 flex items-center gap-2"></h3>
+                <i class="fas fa-lightbulb text-cyan-400"></i>
+                Dziedzorm
+              </h3>
+              <p class="text-cyan-300 mt-2 font-medium">Public Sector Economics</p>
+              <div class="mt-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i class="fas fa-certificate text-yellow-400"></i> Research Excellence
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Image Gallery Section -->
+    <section class="py-16 bg-gradient-to-b from-gray-900 to-blue-900 overflow-hidden">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-extrabold text-center mb-8 relative">
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 animate-gradient">
+            Success Moments
+          </span>
+          <div class="absolute -top-8 left-1/2 transform -translate
+    -x-1/2 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl"></div>
+        </h2>
+        
+        <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+          Celebrating our students' achievements and memorable moments on their journey to excellence
+        </p>
+
+        <div class="relative">
+          <!-- Decorative elements -->
+          <div class="absolute -left-20 top-1/2 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl"></div>
+          <div class="absolute -right-20 bottom-0 w-40 h-40 bg-blue-500/30 rounded-full blur-3xl"></div>
+
+          <div id="imageGallery" 
+               class="max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mx-auto relative z-10">
+            <!-- Images will be inserted here dynamically -->
+          </div>
+        </div>
+
+        <!-- Gallery navigation -->
+        <div class="flex justify-center gap-4 mt-12">
+          <button class="px-6 py-2 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors duration-300 flex items-center gap-2">
+            <i class="fas fa-th-large"></i>
+            View All
+          </button>
+          <button class="px-6 py-2 rounded-full bg-purple-600 hover:bg-purple-700 transition-colors duration-300 flex items-center gap-2">
+            <i class="fas fa-play"></i>
+            Slideshow
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Lightbox -->
+    <div
+      id="lightbox"
+      class="fixed p-3 inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center hidden"
+    >
+      <div class="relative max-w-4xl w-full">
+        <button
+          class="absolute top-4 right-4 text-white text-2xl"
+          onclick="closeLightbox()"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <img
+          id="lightbox-img"
+          class="max-w-full max-h-[90vh] mx-auto rounded-lg"
+        />
+      </div>
+    </div>
+
+    <div id="footer-container"></div>
+
+    <script>
      
 
-    <div id="imageGallery" class="max-w-7xl grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-4 justify-center items-center mx-auto">
-        <!-- Images will be inserted here dynamically -->
-    </div>
-    
 
-    <section class="container mx-auto px-6 py-12 text-center">
-        <h2 class="text-4xl font-extrabold text-blue-400 mb-12 uppercase flex items-center justify-center gap-4">
-            <i class="fas fa-trophy text-5xl text-blue-500"></i>
-            Award Winners (2020 - Present)
-        </h2>
-        <div class="max-w-7xl grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 p-4 justify-center items-center mx-auto">
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Felicia Omotoyo
-                </h3>
-                <p class="text-gray-300 mt-2">Oil and Gas Taxation</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Theophilus Nyarko
-                </h3>
-                <p class="text-gray-300 mt-2">Strategic Tax Planning</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Dziedzorm
-                </h3>
-                <p class="text-gray-300 mt-2">Public Sector Economic and Finance</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Frank Aboagye Bekyem
-                </h3>
-                <p class="text-gray-300 mt-2">Accounting and Finance</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Musah Crispinus Piiba
-                </h3>
-                <p class="text-gray-300 mt-2">Overall Best Final 2</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Owuraku Nsiah
-                </h3>
-                <p class="text-gray-300 mt-2">Overall Best Final 2</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Milicent Freeman
-                </h3>
-                <p class="text-gray-300 mt-2">Overall Best Final 2</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Frederick Morden
-                </h3>
-                <p class="text-gray-300 mt-2">Overall Best Final 1</p>
-            </div>
-            <div class=" p-6 rounded-2xl shadow-xl border border-blue-400 transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> Kwasi Agyen Benson
-                </h3>
-                <p class="text-gray-300 mt-2">International Taxation</p>
-            </div>
-            <div class=" p-6 rounded-2xl border border-blue-400 shadow-xl transform hover:scale-105 transition-transform">
-                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                    <i class="fas fa-award text-blue-400"></i> David Senaya
-                </h3>
-                <p class="text-gray-300 mt-2">Tax Audit and Investigations</p>
-            </div>
-        </div>
-    </section>
-    
-    
-    <script>
-        const mediaString  = 
-       'https://drive.google.com/file/d/1RuuxWW5ZWaehcVxp0YJqg-AE9Kuk3jCI/view?usp=drive_link, https://drive.google.com/file/d/1cmcm7mEedkvu0oMp5TOvxeq1cx289fWn/view?usp=drive_link, https://drive.google.com/file/d/1dY0jgp_xWXQYnhkH0xBMy_RkwmDe3sLa/view?usp=drive_link, https://drive.google.com/file/d/1dUv0_FnByXuOvbEFxnJu7GqymI5qRKhS/view?usp=drive_link, https://drive.google.com/file/d/1cIzVF2TOErMOfd1Me_oDLhsPOjHkZDUy/view?usp=drive_link, https://drive.google.com/file/d/1dNTwiyhgpjnIMkKf158ts4esfmF-R66-/view?usp=drive_link, https://drive.google.com/file/d/1d5-jdJYi-R8-MvfkJi5-_31_OMSr_0_2/view?usp=drive_link, https://drive.google.com/file/d/1cbmaoWU6uhONZh9GXvj3dE5XbbqsRO8A/view?usp=drive_link, https://drive.google.com/file/d/1c8VH3JU6IxFxFOVe72CERT6S5ho7f1f0/view?usp=drive_link, https://drive.google.com/file/d/1cB6Tepwlr_GzEbas3NheFn-aQ4gDeEAd/view?usp=drive_link, https://drive.google.com/file/d/1xM2IDdZoGhA5T6JLFn9y2PsYG6T7198d/view?usp=drive_link https://drive.google.com/file/d/1clB5HxzrAomJoWF4v-mwWAMy80_K2ODe/view?usp=drive_link https://drive.google.com/file/d/1RvuVyFv-wO1uO9dB0A_phBQWXiGuA3qO/view?usp=drive_link, https://drive.google.com/file/d/1Rw7FS-c4gNzVexr4_4VdTOvqUmGxEoPv/view?usp=drive_link, https://drive.google.com/file/d/1RnUhmdKuhrH7BH_SS0n6E3T0qfrpcigZ/view?usp=drive_link, https://drive.google.com/file/d/1S-V9cF6ad3xHgSujQ5WhIZXAm1l96FFT/view?usp=drive_link, https://drive.google.com/file/d/1S1CjTBCVmcEWGx-YHneziPksTRCQZ5sU/view?usp=drive_link, https://drive.google.com/file/d/1S2QWZR5TAHYFTvfZaZku9H0igovqGStY/view?usp=drive_link, https://drive.google.com/file/d/1S2hLHNVBl54oYBP-e8al1zKLvKSVOn_v/view?usp=drive_link, https://drive.google.com/file/d/1S3hoVLaZzseBmAuzmbAhFGs_qkypJ2C-/view?usp=drive_link, https://drive.google.com/file/d/1S50sBrAKd5uRNmTFN91u0xPu4huETzMi/view?usp=drive_link, https://drive.google.com/file/d/1S6fMvYtzQ8cq2B-_Gh3ZlS8fn20A8MKP/view?usp=drive_link, https://drive.google.com/file/d/1SB4ZTN8-Jytv4WcgHPZGEe79ujODltTS/view?usp=drive_link, https://drive.google.com/file/d/1SHyU6Ucyy6IrYMc1sw5LUivTf3KK4TIx/view?usp=drive_link, https://drive.google.com/file/d/1SIDqPC5PIKk9RFKU2Pn50gmTxRkPZzfC/view?usp=drive_link, https://drive.google.com/file/d/1SNG1e2qI-1uFqzq5R8shU15S1yfIzjYS/view?usp=drive_link, https://drive.google.com/file/d/1STuz5yrPZLvzeDtMTBgyXWn6ifYPSqhZ/view?usp=drive_link, https://drive.google.com/file/d/1SUUIY46psaajo16bhs-xdUuhNc0nk-hc/view?usp=drive_link, https://drive.google.com/file/d/1SZj-HNh9-EC4MO_iN85mT-LFFSAcZffd/view?usp=drive_link, https://drive.google.com/file/d/1S_DHu_q4A_wZgNOMzlDUQhr0a62xXRJ8/view?usp=drive_link, https://drive.google.com/file/d/1SfhGlFo7DGVtU7MZelJm4sDU9aZhV3te/view?usp=drive_link, https://drive.google.com/file/d/1SiK1KLVJHc-eP5wqpjz58SAKEws1SJH4/view?usp=drive_link, https://drive.google.com/file/d/1SnfMNtzEAPyKqU86w_HgRhTyzOp3fvUe/view?usp=drive_link, https://drive.google.com/file/d/1SpmxpcLBDBvuMmDz2wAkekNgrH5O0ozn/view?usp=drive_link, https://drive.google.com/file/d/1SwtvD58zIDoXWU9O0e-fqf62annAyZCF/view?usp=drive_link, https://drive.google.com/file/d/1T5eVrAkkv9syC-1FnID-Ms1M7BiMZ2mF/view?usp=drive_link, https://drive.google.com/file/d/1T8fl9I1mEjsDrY5P5a4X3AT_P2N1z6BX/view?usp=drive_link, https://drive.google.com/file/d/1TEuZgYApnhLvO3DjJQp3e-wl0cL5x4u5/view?usp=drive_link, https://drive.google.com/file/d/1TLvK-xu_SfYskanmTeWwBO0m9pvZ37dF/view?usp=drive_link, https://drive.google.com/file/d/1TMd-Pgp2Lf9EBCXWo-2Yt6YPv9MwRP7V/view?usp=drive_link, https://drive.google.com/file/d/1TNA-oVlTjBBbrHPWj-N_0Ss-So1rTuL5/view?usp=drive_link, https://drive.google.com/file/d/1TSpTIM96hbmpYRMXLLnZ8K5U7pPhOSGB/view?usp=drive_link, https://drive.google.com/file/d/1TT-lPASJsVFk2XC7bXpt9BBFvfxK64oJ/view?usp=drive_link, https://drive.google.com/file/d/1TVuLgWUK-BS4IvO6aCZq5uZzyogNqul4/view?usp=drive_link, https://drive.google.com/file/d/1T_IBPsdyt8xn3GVTCFRgVoS1W1pKPVYL/view?usp=drive_link, https://drive.google.com/file/d/1Ta0Q6L-fqQtcDiMZ_GcMFuZgghxAsddN/view?usp=drive_link, https://drive.google.com/file/d/1TbLcBRtXa9eW9e7UtTmE_59P0ZLzB0AA/view?usp=drive_link, https://drive.google.com/file/d/1TkGdpKQc5H2zbN4Fba8ZoB-h_SqA6han/view?usp=drive_link, https://drive.google.com/file/d/1sw68o8Rh_Y5-fAowKpOW41La5HsHcrrs/view?usp=drive_link, https://drive.google.com/file/d/1sr-ivqmDM0t4j95GwD8JE_En3w_H16cr/view?usp=drive_link, https://drive.google.com/file/d/1soSliEPLKKSX_C2k1FVc84hfRETG2K10/view?usp=drive_link, https://drive.google.com/file/d/1sinXtHXr1xIDlZZM6c4Ht6BuDWIdeh9i/view?usp=drive_link, https://drive.google.com/file/d/1sby-9tBe84D8Dpd8CFpoaevKi-C0TFky/view?usp=drive_link, https://drive.google.com/file/d/1sacEsuE8VfMXxf63HlplwPyUAP7zhEtc/view?usp=drive_link, https://drive.google.com/file/d/1sYufS0nhOTJYW_VCNSNBfHS3jvz6mU8I/view?usp=drive_link, https://drive.google.com/file/d/1sXAwcvp5Ze5cGISOuqvm8Sl4JAEKRn9v/view?usp=drive_link, https://drive.google.com/file/d/1sLzCmMtW3nSyO6dyto6htVqI-faCzSWP/view?usp=drive_link, https://drive.google.com/file/d/1sKxXFoDpfurto3Xqk-Feq-B_3tRQPIby/view?usp=drive_link, https://drive.google.com/file/d/1sKoiJwRxtlE87mU3ggKv8TEL7eDTI-Yw/view?usp=drive_link, https://drive.google.com/file/d/1sGy9TAbAgGZ94HaMSD_LfxHOnJe1BzUG/view?usp=drive_link, https://drive.google.com/file/d/1sGXK6jaMBKl_Xug4FpgNxMNVBpPUXekz/view?usp=drive_link, https://drive.google.com/file/d/1sEuZbHSPj8uI0olv-PNd5IMPQE5XAkHd/view?usp=drive_link, https://drive.google.com/file/d/1sBeCf2URDURAoFXHkUUy1moBf06CW6F3/view?usp=drive_link, https://drive.google.com/file/d/1s9kfl6lRbJKAQxeY8GrY06B96yOqjEAk/view?usp=drive_link, https://drive.google.com/file/d/1s9U5-4NLJ0Fwl0D2gNKeS7-8JCDM2-IN/view?usp=drive_link, https://drive.google.com/file/d/1s5l1wTVynn2cFuuUJY6ecKhzJf3CRZIX/view?usp=drive_link, https://drive.google.com/file/d/1rwk2mP9GI-D9etOT1nS8z-rOakWopvuc/view?usp=drive_link, https://drive.google.com/file/d/1ruthA_YXgXrK5yjlZV3n92L7_u8Kciqh/view?usp=drive_link, https://drive.google.com/file/d/1rlkiVwBpL7nh8JGLkQ47ecqwfDkKc407/view?usp=drive_link, https://drive.google.com/file/d/1rkeKFN6eEs6iAgoYEyy26iv_akcbR-pE/view?usp=drive_link, https://drive.google.com/file/d/1rgOtmoK5fKy_2Y9dThdqg6dWm6v8Pts8/view?usp=drive_link, https://drive.google.com/file/d/1rW6FVcy0GEO-GqntCBTTB9M4QOtjekn-/view?usp=drive_link, https://drive.google.com/file/d/1rS08-6YKlg-eYRSZT3CezX93xSXGcSUl/view?usp=drive_link, https://drive.google.com/file/d/1rPocyptCtoO8WeNvdafXa5VHKSUjoKFu/view?usp=drive_link, https://drive.google.com/file/d/1rJJxoFMTYTOA-wFT0uR3uacM4memjyzo/view?usp=drive_link, https://drive.google.com/file/d/1rJ1b62zP3e8bX95Juq4ukLBLTU3ShN4V/view?usp=drive_link, https://drive.google.com/file/d/1rIDU1SRe5GQQBCz88-LegEqpceRxZdJD/view?usp=drive_link, https://drive.google.com/file/d/1dYMTBePbKBtzZCxhVx6cVMq1ZQ4fcFx_/view?usp=drive_link, https://drive.google.com/file/d/1dVE4l-2fHiHsvWJAb_IMB5Bt3PJ6EcfX/view?usp=drive_link, https://drive.google.com/file/d/1dNGQaNDcdL4_BwigMxpfQeyBVg5-NOfM/view?usp=drive_link, https://drive.google.com/file/d/1dJr52DCNZuY5mT4I4DuoP6UDi3BJgAm6/view?usp=drive_link, https://drive.google.com/file/d/1dHDTgAJbM5C3ImpKvFtWDXYgjYE5cCaD/view?usp=drive_link, https://drive.google.com/file/d/1dFAkwwd0w_BEEk2AZIpkJbOFVt8CPeme/view?usp=drive_link, https://drive.google.com/file/d/1dF9X-_sYQbLeazAxhMYK1zopYlMziKI3/view?usp=drive_link, https://drive.google.com/file/d/1dCQmaxYcR6W2DMKUDYthWlXzDDPoTtFI/view?usp=drive_link, https://drive.google.com/file/d/1dBhoCaaSs6t9AQ-hVNCKGme_wDOyRNtO/view?usp=drive_link, https://drive.google.com/file/d/1d3K60y899g9YuksSvIYaw9OCNmgq8KJR/view?usp=drive_link, https://drive.google.com/file/d/1d1tXWk-tGQV35bD62bSqYLSajauAKM_m/view?usp=drive_link, https://drive.google.com/file/d/1d1ZG4vmRIj_ZYiUiEVookX9woKbEk877/view?usp=drive_link, https://drive.google.com/file/d/1d-bv5_73IqHB_Qnj9x0R1nMrDLVv-5E0/view?usp=drive_link, https://drive.google.com/file/d/1cv477ENPzqEUpLgScx0pskfnKyZR21Gj/view?usp=drive_link, https://drive.google.com/file/d/1cjMUSXxdCraH0MGPw11m9yT9CcOC98S6/view?usp=drive_link, https://drive.google.com/file/d/1cipRYBoY9LczxVMlKw87CBbF7DKQ_8eA/view?usp=drive_link, https://drive.google.com/file/d/1cZ1zPzl0nzT67GBalKM6MndK3r38RTEz/view?usp=drive_link, https://drive.google.com/file/d/1cSHPMpzTyOORrhzkEy58xEJ_-klCaDqY/view?usp=drive_link, https://drive.google.com/file/d/1cRb8M_cywzppa877-jH7dUmqD8mvNYF5/view?usp=drive_link, https://drive.google.com/file/d/1cR1b0vJSGwlmPD7DxEqXGwfnX-nOCQ6G/view?usp=drive_link';
 
-         // Convert the string into an array
-         const mediaItems = mediaString.split(', ').map(link => link.trim());
+      // Intersection Observer for animations
+      const observerOptions = {
+        threshold: 0.2,
+        rootMargin: "0px",
+      };
 
-  // Function to extract file ID
-  function extractFileId(driveLink) {
-            const match = driveLink.match(/\/d\/(.*?)\//);
-            return match ? match[1] : null;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, observerOptions);
+
+      // Image Gallery Logic
+      const mediaString = ` 
+        https://drive.google.com/file/d/1cR1b0vJSGwlmPD7DxEqXGwfnX-nOCQ6G/view?usp=drive_link
+        https://drive.google.com/file/d/1RuuxWW5ZWaehcVxp0YJqg-AE9Kuk3jCI/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cmcm7mEedkvu0oMp5TOvxeq1cx289fWn/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dY0jgp_xWXQYnhkH0xBMy_RkwmDe3sLa/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dUv0_FnByXuOvbEFxnJu7GqymI5qRKhS/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cIzVF2TOErMOfd1Me_oDLhsPOjHkZDUy/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dNTwiyhgpjnIMkKf158ts4esfmF-R66-/view?usp=drive_link, 
+        https://drive.google.com/file/d/1d5-jdJYi-R8-MvfkJi5-_31_OMSr_0_2/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cbmaoWU6uhONZh9GXvj3dE5XbbqsRO8A/view?usp=drive_link, 
+        https://drive.google.com/file/d/1c8VH3JU6IxFxFOVe72CERT6S5ho7f1f0/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cB6Tepwlr_GzEbas3NheFn-aQ4gDeEAd/view?usp=drive_link, 
+        https://drive.google.com/file/d/1xM2IDdZoGhA5T6JLFn9y2PsYG6T7198d/view?usp=drive_link 
+        https://drive.google.com/file/d/1clB5HxzrAomJoWF4v-mwWAMy80_K2ODe/view?usp=drive_link 
+        https://drive.google.com/file/d/1RvuVyFv-wO1uO9dB0A_phBQWXiGuA3qO/view?usp=drive_link, 
+        https://drive.google.com/file/d/1Rw7FS-c4gNzVexr4_4VdTOvqUmGxEoPv/view?usp=drive_link, 
+        https://drive.google.com/file/d/1RnUhmdKuhrH7BH_SS0n6E3T0qfrpcigZ/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S-V9cF6ad3xHgSujQ5WhIZXAm1l96FFT/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S1CjTBCVmcEWGx-YHneziPksTRCQZ5sU/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S2QWZR5TAHYFTvfZaZku9H0igovqGStY/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S2hLHNVBl54oYBP-e8al1zKLvKSVOn_v/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S3hoVLaZzseBmAuzmbAhFGs_qkypJ2C-/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S50sBrAKd5uRNmTFN91u0xPu4huETzMi/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S6fMvYtzQ8cq2B-_Gh3ZlS8fn20A8MKP/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SB4ZTN8-Jytv4WcgHPZGEe79ujODltTS/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SHyU6Ucyy6IrYMc1sw5LUivTf3KK4TIx/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SIDqPC5PIKk9RFKU2Pn50gmTxRkPZzfC/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SNG1e2qI-1uFqzq5R8shU15S1yfIzjYS/view?usp=drive_link, 
+        https://drive.google.com/file/d/1STuz5yrPZLvzeDtMTBgyXWn6ifYPSqhZ/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SUUIY46psaajo16bhs-xdUuhNc0nk-hc/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SZj-HNh9-EC4MO_iN85mT-LFFSAcZffd/view?usp=drive_link, 
+        https://drive.google.com/file/d/1S_DHu_q4A_wZgNOMzlDUQhr0a62xXRJ8/view?usp=drive_link,
+        https://drive.google.com/file/d/1SfhGlFo7DGVtU7MZelJm4sDU9aZhV3te/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SiK1KLVJHc-eP5wqpjz58SAKEws1SJH4/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SnfMNtzEAPyKqU86w_HgRhTyzOp3fvUe/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SpmxpcLBDBvuMmDz2wAkekNgrH5O0ozn/view?usp=drive_link, 
+        https://drive.google.com/file/d/1SwtvD58zIDoXWU9O0e-fqf62annAyZCF/view?usp=drive_link, 
+        https://drive.google.com/file/d/1T5eVrAkkv9syC-1FnID-Ms1M7BiMZ2mF/view?usp=drive_link, 
+        https://drive.google.com/file/d/1T8fl9I1mEjsDrY5P5a4X3AT_P2N1z6BX/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TEuZgYApnhLvO3DjJQp3e-wl0cL5x4u5/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TLvK-xu_SfYskanmTeWwBO0m9pvZ37dF/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TMd-Pgp2Lf9EBCXWo-2Yt6YPv9MwRP7V/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TNA-oVlTjBBbrHPWj-N_0Ss-So1rTuL5/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TSpTIM96hbmpYRMXLLnZ8K5U7pPhOSGB/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TT-lPASJsVFk2XC7bXpt9BBFvfxK64oJ/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TVuLgWUK-BS4IvO6aCZq5uZzyogNqul4/view?usp=drive_link, 
+        https://drive.google.com/file/d/1T_IBPsdyt8xn3GVTCFRgVoS1W1pKPVYL/view?usp=drive_link, 
+        https://drive.google.com/file/d/1Ta0Q6L-fqQtcDiMZ_GcMFuZgghxAsddN/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TbLcBRtXa9eW9e7UtTmE_59P0ZLzB0AA/view?usp=drive_link, 
+        https://drive.google.com/file/d/1TkGdpKQc5H2zbN4Fba8ZoB-h_SqA6han/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sw68o8Rh_Y5-fAowKpOW41La5HsHcrrs/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sr-ivqmDM0t4j95GwD8JE_En3w_H16cr/view?usp=drive_link, 
+        https://drive.google.com/file/d/1soSliEPLKKSX_C2k1FVc84hfRETG2K10/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sinXtHXr1xIDlZZM6c4Ht6BuDWIdeh9i/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sby-9tBe84D8Dpd8CFpoaevKi-C0TFky/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sacEsuE8VfMXxf63HlplwPyUAP7zhEtc/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sYufS0nhOTJYW_VCNSNBfHS3jvz6mU8I/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sXAwcvp5Ze5cGISOuqvm8Sl4JAEKRn9v/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sLzCmMtW3nSyO6dyto6htVqI-faCzSWP/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sKxXFoDpfurto3Xqk-Feq-B_3tRQPIby/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sKoiJwRxtlE87mU3ggKv8TEL7eDTI-Yw/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sGy9TAbAgGZ94HaMSD_LfxHOnJe1BzUG/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sGXK6jaMBKl_Xug4FpgNxMNVBpPUXekz/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sEuZbHSPj8uI0olv-PNd5IMPQE5XAkHd/view?usp=drive_link, 
+        https://drive.google.com/file/d/1sBeCf2URDURAoFXHkUUy1moBf06CW6F3/view?usp=drive_link, 
+        https://drive.google.com/file/d/1s9kfl6lRbJKAQxeY8GrY06B96yOqjEAk/view?usp=drive_link, 
+        https://drive.google.com/file/d/1s9U5-4NLJ0Fwl0D2gNKeS7-8JCDM2-IN/view?usp=drive_link, 
+        https://drive.google.com/file/d/1s5l1wTVynn2cFuuUJY6ecKhzJf3CRZIX/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rwk2mP9GI-D9etOT1nS8z-rOakWopvuc/view?usp=drive_link, 
+        https://drive.google.com/file/d/1ruthA_YXgXrK5yjlZV3n92L7_u8Kciqh/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rlkiVwBpL7nh8JGLkQ47ecqwfDkKc407/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rkeKFN6eEs6iAgoYEyy26iv_akcbR-pE/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rgOtmoK5fKy_2Y9dThdqg6dWm6v8Pts8/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rW6FVcy0GEO-GqntCBTTB9M4QOtjekn-/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rS08-6YKlg-eYRSZT3CezX93xSXGcSUl/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rPocyptCtoO8WeNvdafXa5VHKSUjoKFu/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rJJxoFMTYTOA-wFT0uR3uacM4memjyzo/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rJ1b62zP3e8bX95Juq4ukLBLTU3ShN4V/view?usp=drive_link, 
+        https://drive.google.com/file/d/1rIDU1SRe5GQQBCz88-LegEqpceRxZdJD/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dYMTBePbKBtzZCxhVx6cVMq1ZQ4fcFx_/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dVE4l-2fHiHsvWJAb_IMB5Bt3PJ6EcfX/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dNGQaNDcdL4_BwigMxpfQeyBVg5-NOfM/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dJr52DCNZuY5mT4I4DuoP6UDi3BJgAm6/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dHDTgAJbM5C3ImpKvFtWDXYgjYE5cCaD/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dFAkwwd0w_BEEk2AZIpkJbOFVt8CPeme/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dF9X-_sYQbLeazAxhMYK1zopYlMziKI3/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dCQmaxYcR6W2DMKUDYthWlXzDDPoTtFI/view?usp=drive_link, 
+        https://drive.google.com/file/d/1dBhoCaaSs6t9AQ-hVNCKGme_wDOyRNtO/view?usp=drive_link, 
+        https://drive.google.com/file/d/1d3K60y899g9YuksSvIYaw9OCNmgq8KJR/view?usp=drive_link, 
+        https://drive.google.com/file/d/1d1tXWk-tGQV35bD62bSqYLSajauAKM_m/view?usp=drive_link, 
+        https://drive.google.com/file/d/1d1ZG4vmRIj_ZYiUiEVookX9woKbEk877/view?usp=drive_link, 
+        https://drive.google.com/file/d/1d-bv5_73IqHB_Qnj9x0R1nMrDLVv-5E0/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cv477ENPzqEUpLgScx0pskfnKyZR21Gj/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cjMUSXxdCraH0MGPw11m9yT9CcOC98S6/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cipRYBoY9LczxVMlKw87CBbF7DKQ_8eA/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cZ1zPzl0nzT67GBalKM6MndK3r38RTEz/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cSHPMpzTyOORrhzkEy58xEJ_-klCaDqY/view?usp=drive_link, 
+        https://drive.google.com/file/d/1cRb8M_cywzppa877-jH7dUmqD8mvNYF5/view?usp=drive_link,
+        `;
+
+      function extractFileId(driveLink) {
+        const match = driveLink.match(/\/d\/(.*?)\//);
+        return match ? match[1] : null;
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        createTestimonialCards();
+
+        // Observe all testimonial cards
+        document.querySelectorAll(".testimonial-card").forEach((card) => {
+          observer.observe(card);
+        });
+
+        // Setup star rating interaction
+        document.querySelectorAll(".star-rating i").forEach((star, index) => {
+          star.addEventListener("click", () => {
+            document.querySelectorAll(".star-rating i").forEach((s, i) => {
+              s.classList.toggle("text-yellow-400", i <= index);
+            });
+          });
+        });
+
+        // Setup form submission
+        document
+          .getElementById("testimonialForm")
+          .addEventListener("submit", (e) => {
+            e.preventDefault();
+            // Add your form submission logic here
+            alert(
+              "Thank you for sharing your story! It will be reviewed and posted soon."
+            );
+            e.target.reset();
+          });
+      });
+
+      // Lightbox functions
+      function closeLightbox() {
+        document.getElementById("lightbox").classList.add("hidden");
+      }
+
+      // Close lightbox when clicking outside the image
+      document.getElementById("lightbox").addEventListener("click", (e) => {
+        if (e.target.id === "lightbox") {
+          closeLightbox();
         }
+      });
 
-        // Generate direct image links
-        const imageLinks = mediaItems
-            .map(extractFileId)
-            .filter(id => id !== null)
-            .map(id => `https://lh3.googleusercontent.com/d/${id}`);
+      // Image gallery logic
+      const imageLinks = mediaString
+        .split(", ")
+        .map((link) => link.trim())
+        .map(extractFileId)
+        .filter((id) => id !== null)
+        .map((id) => `https://lh3.googleusercontent.com/d/${id}`);
 
-        // Display images
-        const imageGallery = document.getElementById("imageGallery");
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightbox-img");
+      const imageGallery = document.getElementById("imageGallery");
+      imageLinks.forEach((url, index) => {
+        const container = document.createElement("div");
+        container.className = "relative group testimonial-card";
 
-// Scroll Animation - Intersection Observer
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("opacity-100", "translate-y-0");
-        }
-    });
-}, { threshold: 0.2 });
+        const imgElement = document.createElement("img");
+        imgElement.src = index < 3 ? url : "";
+        imgElement.dataset.src = url;
+        imgElement.className =
+          `w-full h-48 object-cover p-2 border-2 border-blue-400/50 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.3)] 
+          lazyload transition-all duration-500 hover:scale-105 hover:shadow-[0_0_25px_rgba(59,130,246,0.6)] 
+          hover:border-blue-500 cursor-pointer backdrop-blur-sm bg-gradient-to-br from-blue-900/10 to-transparent 
+          group-hover:rotate-1 filter hover:brightness-110`
 
-imageLinks.forEach((url, index) => {
-    const container = document.createElement("div");
-    container.className = "relative group"; // Group for hover effects
-    observer.observe(container); // Apply observer for scroll animation
-    const imgElement = document.createElement("img");
+        imgElement.onclick = () => {
+          document.getElementById("lightbox-img").src = url;
+          document.getElementById("lightbox").classList.remove("hidden");
+        };
 
-    // Load first 3 images immediately, lazy load the rest
-    imgElement.src = index < 3 ? url : "";
-    imgElement.dataset.src = url;
-    
-    // Tailwind classes for styling
-    imgElement.className = "w-full h-48 object-cover  p-2 border border-blue-400 rounded-lg shadow-lg lazyload transition-transform duration-300 hover:scale-105 cursor-pointer";
-    
-    // Lightbox functionality when clicking the image
-    imgElement.onclick = () => {
-        lightboxImg.src = url;
-        lightbox.classList.remove("hidden");
-    };
-
-
-// Satisfied icon
-
-const Satisfied = document.createElement('div')
-Satisfied.className = "absolute top-2 left-4 w-12 h-12 flex justify-center items-center bg-black bg-opacity-50 text-white  rounded-full opacity-100 group-hover:opacity-50  transition-opacity duration-300"
-Satisfied.innerHTML = `<i class="fas fa-smile text-blue-400 text-3xl"></i>`
-    // Fullscreen Icon Button
-    const fullscreenBtn = document.createElement("button");
-    fullscreenBtn.className = "absolute top-2 right-4 w-12 h-12 flex justify-center items-center bg-black bg-opacity-50 text-white  rounded-full opacity-100 group-hover:opacity-50 transition-opacity duration-300";
-    fullscreenBtn.innerHTML = `<i class="fas fa-expand text-blue-400"></i>`; // FontAwesome icon
-
-    // Click icon to open Lightbox
-    fullscreenBtn.onclick = (e) => {
-        e.stopPropagation(); // Prevent image click event
-        lightboxImg.src = url;
-        lightbox.classList.remove("hidden");
-    };
-
-    // Append elements
-    container.appendChild(imgElement);
-    container.appendChild(fullscreenBtn);
-    container.appendChild(Satisfied)
-    imageGallery.appendChild(container);
-});
-
-// Close Lightbox on click outside the image
-lightbox.onclick = () => {
-    lightbox.classList.add("hidden");
-};
-    
-
+        container.appendChild(imgElement);
+        imageGallery.appendChild(container);
+        observer.observe(container);
+      });
     </script>
-      <div id="footer-container"></div>
-      <script src="footerp.js"></script>
-</body>
+  </body>
 </html>
