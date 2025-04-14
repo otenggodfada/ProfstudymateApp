@@ -17,6 +17,11 @@
     <script type="module" src="./navbar.js"></script>
     <script type="module" src="./dynamiccon.js"></script>
     <script src="bottomnv.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf_viewer.min.css"
+      rel="stylesheet"
+    />
     <style>
       .pdf-protection {
         position: relative;
@@ -57,63 +62,62 @@
           color: rgba(0, 0, 0, 0.3) !important;
         }
       }
+      #pdfContainer {
+        width: 100%;
+        height: calc(100vh - 48px);
+        overflow: auto;
+        background: #525659;
+      }
+
+      #pdfViewer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .page-container {
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        background: white;
+      }
+
+      .pdf-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 20px;
+        border-radius: 20px;
+        display: flex;
+        gap: 15px;
+        z-index: 1000;
+      }
+
+      .pdf-controls button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+
+      .pdf-controls button:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .pdf-page-info {
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
     </style>
-    <script>
-      // Secure PDF URL handling
-      const SecurePdfHandler = {
-        _store: new WeakMap(),
-        _key: new Uint8Array(16).map(() => Math.floor(Math.random() * 256)),
-
-        // Convert array to hex string
-        _toHex(buffer) {
-          return Array.from(new Uint8Array(buffer))
-            .map((b) => b.toString(16).padStart(2, "0"))
-            .join("");
-        },
-
-        // Convert hex string to array
-        _fromHex(hex) {
-          const pairs = hex.match(/.{2}/g) || [];
-          return new Uint8Array(pairs.map((pair) => parseInt(pair, 16)));
-        },
-
-        // XOR encryption
-        async _encrypt(text) {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(text);
-          const encrypted = new Uint8Array(data.length);
-          for (let i = 0; i < data.length; i++) {
-            encrypted[i] = data[i] ^ this._key[i % this._key.length];
-          }
-          return this._toHex(encrypted);
-        },
-
-        // XOR decryption
-        async _decrypt(hex) {
-          const encrypted = this._fromHex(hex);
-          const decrypted = new Uint8Array(encrypted.length);
-          for (let i = 0; i < encrypted.length; i++) {
-            decrypted[i] = encrypted[i] ^ this._key[i % this._key.length];
-          }
-          return new TextDecoder().decode(decrypted);
-        },
-
-        // Store URL and get token
-        async protect(url) {
-          const token = {};
-          const encrypted = await this._encrypt(url);
-          this._store.set(token, encrypted);
-          return token;
-        },
-
-        // Retrieve URL using token
-        async retrieve(token) {
-          const encrypted = this._store.get(token);
-          if (!encrypted) return null;
-          return await this._decrypt(encrypted);
-        },
-      };
-    </script>
   </head>
   <body class="bg-gray-900 text-white p-5 flex flex-col items-center">
     <div
@@ -169,38 +173,190 @@
       class="hidden fixed z-50 inset-0 bg-black bg-opacity-90 flex items-center justify-center"
     >
       <div
-        class="bg-white w-full h-full rounded-lg relative shadow-lg pdf-protection"
+        class="bg-gray-800 w-full h-full rounded-lg relative shadow-lg pdf-protection"
       >
+        <!-- Top Toolbar -->
         <div
-          class="absolute top-0 left-0 right-0 bg-gray-800 p-3 flex justify-between items-center z-20"
+          class="absolute top-0 left-0 right-0 bg-gray-800 p-3 flex justify-between items-center z-20 border-b border-gray-700"
         >
           <div class="flex items-center space-x-4">
             <button
               id="zoomOut"
-              class="text-white hover:text-blue-400 transition"
+              class="text-white hover:text-blue-400 transition tooltip"
+              title="Zoom Out"
             >
               <i class="fas fa-search-minus"></i>
             </button>
             <button
               id="zoomIn"
-              class="text-white hover:text-blue-400 transition"
+              class="text-white hover:text-blue-400 transition tooltip"
+              title="Zoom In"
             >
               <i class="fas fa-search-plus"></i>
             </button>
-            <span id="pageInfo" class="text-white text-sm"></span>
+            <button
+              id="rotateLeft"
+              class="text-white hover:text-blue-400 transition tooltip"
+              title="Rotate Left"
+            >
+              <i class="fas fa-undo"></i>
+            </button>
+            <button
+              id="rotateRight"
+              class="text-white hover:text-blue-400 transition tooltip"
+              title="Rotate Right"
+            >
+              <i class="fas fa-redo"></i>
+            </button>
+            <div class="h-6 w-px bg-gray-600"></div>
+            <button
+              id="toggleReviews"
+              class="text-white hover:text-blue-400 transition tooltip flex items-center gap-2"
+              title="Show Reviews"
+            >
+              <i class="fas fa-comments"></i>
+              <span class="text-sm">Reviews</span>
+            </button>
           </div>
-          <button
-            id="closeModal"
-            class="text-white hover:text-red-500 transition"
-          >
-            <i class="fas fa-times text-xl"></i>
-          </button>
+          <div class="flex items-center gap-4">
+         
+            <button
+              id="closeModal"
+              class="text-white hover:text-red-500 transition tooltip"
+              title="Close"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
         </div>
+
         <div class="watermark"></div>
-        <div class="pdf-overlay"></div>
-        <iframe id="pdfViewer" class="w-full h-full pt-12"></iframe>
+
+        <!-- Main content area with PDF and Reviews -->
+        <div class="flex h-full pt-12">
+          <!-- PDF Viewer -->
+          <div id="pdfContainer" class="flex-1">
+            <div id="pdfViewer"></div>
+          </div>
+
+          <!-- Reviews Sidebar (hidden by default) -->
+          <div
+            id="reviewsSidebar"
+            class="hidden w-96 bg-gray-800 border-l border-gray-700 overflow-y-auto"
+          >
+            <div class="p-4">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-white">Reviews</h3>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="text-yellow-400 text-lg font-bold"
+                    id="averageRating"
+                    >0.0</span
+                  >
+                  <div class="flex items-center">
+                    <i class="fas fa-star text-yellow-400"></i>
+                    <span class="text-gray-400 text-sm ml-1" id="totalReviews"
+                      >(0)</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add Review Button -->
+              <button
+                id="writeReviewBtn"
+                class="w-full bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 transition mb-4"
+              >
+                <i class="fas fa-pen mr-2"></i>Write a Review
+              </button>
+
+              <!-- Review Form (hidden by default) -->
+              <div id="reviewForm" class="hidden mb-4">
+                <div class="bg-gray-700 rounded-lg p-4">
+                  <div class="flex items-center gap-2 mb-3">
+                    <div class="rating">
+                      <i
+                        class="fas fa-star text-gray-400 cursor-pointer hover:text-yellow-400"
+                        data-rating="1"
+                      ></i>
+                      <i
+                        class="fas fa-star text-gray-400 cursor-pointer hover:text-yellow-400"
+                        data-rating="2"
+                      ></i>
+                      <i
+                        class="fas fa-star text-gray-400 cursor-pointer hover:text-yellow-400"
+                        data-rating="3"
+                      ></i>
+                      <i
+                        class="fas fa-star text-gray-400 cursor-pointer hover:text-yellow-400"
+                        data-rating="4"
+                      ></i>
+                      <i
+                        class="fas fa-star text-gray-400 cursor-pointer hover:text-yellow-400"
+                        data-rating="5"
+                      ></i>
+                    </div>
+                    <span class="text-sm text-gray-400" id="ratingText"
+                      >Select rating</span
+                    >
+                  </div>
+                  <textarea
+                    id="reviewText"
+                    class="w-full bg-gray-600 text-white rounded-lg p-3 mb-3"
+                    rows="4"
+                    placeholder="Share your thoughts about this book..."
+                  ></textarea>
+                  <div class="flex justify-end gap-2">
+                    <button
+                      id="cancelReview"
+                      class="px-3 py-1 text-gray-300 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      id="submitReview"
+                      class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reviews List -->
+              <div id="reviewsList" class="space-y-4">
+                <!-- Reviews will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="pdf-controls">
+          <button id="prevPage"><i class="fas fa-chevron-left"></i></button>
+          <div class="pdf-page-info">
+            Page <span id="currentPage">0</span> of
+            <span id="totalPages">0</span>
+          </div>
+          <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
+        </div>
       </div>
     </div>
+
+    <style>
+      .tooltip:hover::after {
+        content: attr(title);
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+        transform: translateY(24px);
+      }
+    </style>
 
     <script>
       window.onload = () => {
@@ -269,70 +425,28 @@
 
         function createBookCard(book) {
           const { title, description, image_url, pdf_url } = book;
-          const fileIdMatch = pdf_url.match(/\/d\/(.*)\/view/);
+          // Update Google Drive URL handling
+          const fileIdMatch = pdf_url.match(/\/d\/([^/]+)/);
           const fileId = fileIdMatch ? fileIdMatch[1] : null;
-          const embeddedPdfUrl = fileId
-            ? `https://drive.google.com/file/d/${fileId}/preview?usp=drivesdk&embedded=true&rm=minimal`
-            : pdf_url;
-
-          // Create card elements
+const fileId1 =book.id
           const bookCard = document.createElement("div");
           bookCard.className =
             "bg-gray-800 rounded-xl overflow-hidden shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-blue-500/20 border border-gray-700";
-
-          // Create elements programmatically
-          const imageContainer = document.createElement("div");
-          imageContainer.className = "relative group";
-
-          const img = document.createElement("img");
-          img.src = image_url;
-          img.alt = title;
-          img.className =
-            "w-full h-48 object-cover transition duration-300 group-hover:opacity-75";
-
-          const gradient = document.createElement("div");
-          gradient.className =
-            "absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300";
-
-          const contentDiv = document.createElement("div");
-          contentDiv.className = "p-6 space-y-4";
-
-          const titleEl = document.createElement("h2");
-          titleEl.className = "text-xl font-bold text-white line-clamp-2";
-          titleEl.textContent = title;
-
-          const descEl = document.createElement("p");
-          descEl.className = "text-gray-400 text-sm line-clamp-3";
-          descEl.textContent = description;
-
-          const button = document.createElement("button");
-          button.className =
-            "w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300";
-
-          // Secure the PDF URL
-          SecurePdfHandler.protect(embeddedPdfUrl).then((token) => {
-            button.onclick = async () => {
-              const url = await SecurePdfHandler.retrieve(token);
-              if (url) openPdf(url, title);
-            };
-          });
-
-          const icon = document.createElement("i");
-          icon.className = "fas fa-book-reader";
-          const span = document.createElement("span");
-          span.textContent = "Read Book";
-
-          // Assemble the elements
-          button.appendChild(icon);
-          button.appendChild(span);
-          imageContainer.appendChild(img);
-          imageContainer.appendChild(gradient);
-          contentDiv.appendChild(titleEl);
-          contentDiv.appendChild(descEl);
-          contentDiv.appendChild(button);
-          bookCard.appendChild(imageContainer);
-          bookCard.appendChild(contentDiv);
-
+          bookCard.innerHTML = `
+            <div class="relative group">
+              <img src="${image_url}" alt="${title}" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-75">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <div class="p-6 space-y-4">
+              <h2 class="text-xl font-bold text-white line-clamp-2">${title}</h2>
+              <p class="text-gray-400 text-sm line-clamp-3">${description}</p>
+              <button class="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                onclick="openPdf('${pdf_url}', '${title}', '${fileId}', '${fileId1}')">
+                <i class="fas fa-book-reader"></i>
+                <span>Read Book</span>
+              </button>
+            </div>
+          `;
           return bookCard;
         }
 
@@ -381,79 +495,533 @@
         });
 
         // Enhanced PDF viewer functionality
-        window.openPdf = (url, title) => {
-          const watermark = document.querySelector(".watermark");
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let scale = 1.5;
+        const viewer = document.getElementById("pdfViewer");
+        const container = document.getElementById("pdfContainer");
+
+        async function renderPage(num) {
+          const page = await pdfDoc.getPage(num);
+          const viewport = page.getViewport({ scale });
+
+          // Create canvas for this page
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          // Create container for the page
+          const pageContainer = document.createElement("div");
+          pageContainer.className = "page-container";
+          pageContainer.appendChild(canvas);
+
+          // Add watermark to each page
+          const watermark = document.createElement("div");
+          watermark.className = "watermark";
+          watermark.style.position = "absolute";
+          watermark.style.opacity = "0.1";
           watermark.textContent = `${
             firebase.auth().currentUser.email
           } - ${new Date().toLocaleDateString()}`;
+          pageContainer.appendChild(watermark);
 
-          const pdfViewer = document.getElementById("pdfViewer");
-
-          // Additional security for iframe
-          const secureUrl = new URL(url);
-          pdfViewer.sandbox = "allow-scripts allow-same-origin";
-          pdfViewer.src = secureUrl.toString();
-
-          document.getElementById("pdfModal").classList.remove("hidden");
-
-          // Enhanced security measures
-          const protectViewer = () => {
-            try {
-              const doc = pdfViewer.contentWindow.document;
-              doc.addEventListener("contextmenu", (e) => e.preventDefault());
-              doc.addEventListener("selectstart", (e) => e.preventDefault());
-              doc.addEventListener("copy", (e) => e.preventDefault());
-              doc.addEventListener("dragstart", (e) => e.preventDefault());
-              doc.addEventListener("keydown", (e) => {
-                if (e.ctrlKey || e.metaKey) e.preventDefault();
-              });
-            } catch (e) {
-              console.warn(
-                "Some security measures couldn't be applied due to cross-origin restrictions"
-              );
-            }
+          // Render PDF page
+          const renderContext = {
+            canvasContext: context,
+            viewport: viewport,
           };
 
-          pdfViewer.onload = protectViewer;
-          document.addEventListener("keydown", preventKeyboardShortcuts);
+          await page.render(renderContext);
+          viewer.appendChild(pageContainer);
+        }
+
+        window.openPdf = async (url, title, fileId, fileId1) => {
+          try {
+            const pdfModal = document.getElementById("pdfModal");
+            const viewer = document.getElementById("pdfViewer");
+            const reviewsSidebar = document.getElementById("reviewsSidebar");
+            viewer.innerHTML = ""; // Clear previous PDF
+            pdfModal.classList.remove("hidden");
+            reviewsSidebar.classList.add("hidden"); // Hide reviews sidebar initially
+
+            // Store the current PDF information
+            window.currentPdfInfo = {
+              url: url,
+              title: title,
+              fileId: fileId,
+
+            };
+
+            // Show loading state
+            viewer.innerHTML = `
+              <div class="flex items-center justify-center w-full h-full">
+                <div class="text-white">
+                  <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin mb-4 mx-auto"></div>
+                  <p>Loading PDF...</p>
+                </div>
+              </div>
+            `;
+
+            // Initialize reviews system
+            initializeReviews(fileId1);
+
+            // Handle Google Drive URLs with clean parameters
+            let pdfUrl = url;
+            if (fileId) {
+              // Use embed URL with parameters to hide controls
+              pdfUrl = `https://drive.google.com/file/d/${fileId}/preview?usp=embed_view&rm=minimal&hl=en&embedded=true&usp=drivesdk&chrome=false&disablekb=1`;
+
+              try {
+                viewer.innerHTML = `
+                  <div class="w-full h-full relative">
+                    <div class="absolute inset-0 z-10" style="pointer-events: none;"></div>
+                    <iframe 
+                      src="${pdfUrl}"
+                      class="w-full h-full"
+                      style="border: none; background: #fff;"
+                      sandbox="allow-scripts allow-same-origin allow-popups"
+                    ></iframe>
+                  </div>
+                `;
+
+                // Add an overlay to prevent interactions with Google Drive controls
+                const overlay = document.createElement("div");
+                overlay.className =
+                  "absolute top-0 left-0 right-0 h-[50px] z-20";
+                overlay.style.background = "#525659";
+                viewer.firstElementChild.appendChild(overlay);
+
+                return; // Exit since we're using iframe for Google Drive
+              } catch (error) {
+                console.log("Cannot embed file directly, showing alternatives");
+                viewer.innerHTML = `
+                
+                `;
+                return;
+              }
+            }
+
+            // Validate PDF before loading
+            try {
+              const response = await fetch(pdfUrl);
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              // Check if the response is actually a PDF
+              const contentType = response.headers.get("content-type");
+              if (contentType && !contentType.includes("application/pdf")) {
+                // If it's not a PDF, try to get it as a blob and validate the magic number
+                const blob = await response.blob();
+                const arr = new Uint8Array(await blob.arrayBuffer());
+                const pdfHeader = [0x25, 0x50, 0x44, 0x46]; // %PDF
+
+                const isPDF = pdfHeader.every((byte, i) => arr[i] === byte);
+                if (!isPDF) {
+                  throw new Error("Invalid PDF format");
+                }
+              }
+
+              // Create a blob URL from the response
+              const pdfBlob = await response.blob();
+              const blobUrl = URL.createObjectURL(pdfBlob);
+
+              // Load and render PDF
+              const loadingTask = pdfjsLib.getDocument({
+                url: blobUrl,
+                cMapUrl:
+                  "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+                cMapPacked: true,
+              });
+
+              loadingTask.onProgress = (data) => {
+                if (data.total > 0) {
+                  const progress = ((data.loaded / data.total) * 100).toFixed(
+                    0
+                  );
+                  viewer.innerHTML = `
+                    <div class="flex items-center justify-center w-full h-full">
+                      <div class="text-white text-center">
+                        <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-12 h-12 animate-spin mb-4"></div>
+                        <p>Loading PDF... ${progress}%</p>
+                      </div>
+                    </div>
+                  `;
+                }
+              };
+
+              pdfDoc = await loadingTask.promise;
+              viewer.innerHTML = "";
+
+              // Clean up the blob URL after loading
+              URL.revokeObjectURL(blobUrl);
+
+              // Update UI
+              document.getElementById("totalPages").textContent =
+                pdfDoc.numPages;
+              document.getElementById("currentPage").textContent = "1";
+
+              // Render first few pages
+              const initialPages = Math.min(3, pdfDoc.numPages);
+              for (let i = 1; i <= initialPages; i++) {
+                await renderPage(i);
+              }
+
+              // Setup infinite scroll with error handling
+              let lastRenderedPage = initialPages;
+              container.onscroll = async () => {
+                if (
+                  container.scrollTop + container.clientHeight >=
+                  container.scrollHeight - 500
+                ) {
+                  if (lastRenderedPage < pdfDoc.numPages) {
+                    try {
+                      lastRenderedPage++;
+                      await renderPage(lastRenderedPage);
+                      document.getElementById("currentPage").textContent =
+                        lastRenderedPage;
+                    } catch (error) {
+                      console.error("Error rendering page:", error);
+                      // Show error message but don't interrupt scrolling
+                      const errorDiv = document.createElement("div");
+                      errorDiv.className = "text-red-500 text-center p-4";
+                      errorDiv.textContent = `Error loading page ${lastRenderedPage}. Please try refreshing.`;
+                      viewer.appendChild(errorDiv);
+                    }
+                  }
+                }
+              };
+            } catch (error) {
+              console.error("Error loading PDF:", error);
+              viewer.innerHTML = `
+              
+              `;
+            }
+          } catch (error) {
+            console.error("Fatal error:", error);
+            viewer.innerHTML = `
+          
+            `;
+          }
+          initializeReviews(fileId);
         };
 
-        function preventKeyboardShortcuts(e) {
-          // Prevent common screenshot and print shortcuts
+        document.getElementById("prevPage").onclick = () => {
+          if (container.firstElementChild) {
+            container.scrollTo({
+              top: container.scrollTop - container.clientHeight,
+              behavior: "smooth",
+            });
+          }
+        };
+
+        document.getElementById("nextPage").onclick = () => {
+          if (container.lastElementChild) {
+            container.scrollTo({
+              top: container.scrollTop + container.clientHeight,
+              behavior: "smooth",
+            });
+          }
+        };
+
+        document.getElementById("zoomIn").onclick = async () => {
+          scale *= 1.2;
+          viewer.innerHTML = "";
+          lastRenderedPage = 0;
+          container.scrollTop = 0;
+          for (let i = 1; i <= Math.min(3, pdfDoc.numPages); i++) {
+            await renderPage(i);
+          }
+        };
+
+        document.getElementById("zoomOut").onclick = async () => {
+          scale /= 1.2;
+          viewer.innerHTML = "";
+          lastRenderedPage = 0;
+          container.scrollTop = 0;
+          for (let i = 1; i <= Math.min(3, pdfDoc.numPages); i++) {
+            await renderPage(i);
+          }
+        };
+
+        document.getElementById("closeModal").onclick = () => {
+          pdfModal.classList.add("hidden");
+          viewer.innerHTML = "";
+          pdfDoc = null;
+        };
+
+        container.addEventListener("contextmenu", (e) => e.preventDefault());
+        container.addEventListener("selectstart", (e) => e.preventDefault());
+        container.addEventListener("copy", (e) => e.preventDefault());
+        container.addEventListener("dragstart", (e) => e.preventDefault());
+
+        document.addEventListener("keydown", (e) => {
           if (
-            (e.ctrlKey &&
-              (e.key === "p" ||
-                e.key === "P" ||
-                e.key === "s" ||
-                e.key === "S")) ||
+            (e.ctrlKey && ["p", "P", "s", "S"].includes(e.key)) ||
             e.key === "PrintScreen" ||
             (e.altKey && e.key === "PrintScreen")
           ) {
             e.preventDefault();
             return false;
           }
+        });
+
+        let currentBookId = null;
+        let selectedRating = 0;
+
+        function initializeReviews(bookId) {
+          if (!bookId) {
+            console.error("No book ID provided for reviews");
+            return;
+          }
+
+          currentBookId = bookId;
+          const reviewForm = document.getElementById("reviewForm");
+          const writeReviewBtn = document.getElementById("writeReviewBtn");
+          const cancelReview = document.getElementById("cancelReview");
+          const submitReview = document.getElementById("submitReview");
+          const ratingStars = document.querySelectorAll(".rating i");
+          const toggleReviews = document.getElementById("toggleReviews");
+          const reviewsSidebar = document.getElementById("reviewsSidebar");
+
+          // Toggle reviews sidebar with immediate load
+          toggleReviews.onclick = () => {
+            const isHidden = reviewsSidebar.classList.contains("hidden");
+            reviewsSidebar.classList.toggle("hidden");
+            if (isHidden) {
+              loadReviews(); // Load reviews when showing the sidebar
+            }
+          };
+
+          // Review form controls
+          writeReviewBtn.onclick = () => {
+            reviewForm.classList.remove("hidden");
+          };
+
+          cancelReview.onclick = () => {
+            reviewForm.classList.add("hidden");
+            resetReviewForm();
+          };
+
+          // Star rating functionality
+          ratingStars.forEach((star, index) => {
+            star.onclick = () => {
+              selectedRating = index + 1;
+              updateStarDisplay(selectedRating);
+            };
+
+            star.onmouseover = () => {
+              updateStarDisplay(index + 1, true);
+            };
+
+            star.onmouseout = () => {
+              updateStarDisplay(selectedRating);
+            };
+          });
+
+          // Submit review
+          submitReview.onclick = async () => {
+            if (!firebase.auth().currentUser) {
+              alert("Please login to submit a review");
+              return;
+            }
+
+            const reviewText = document
+              .getElementById("reviewText")
+              .value.trim();
+
+            if (selectedRating === 0) {
+              alert("Please select a rating");
+              return;
+            }
+
+            if (reviewText.length < 10) {
+              alert("Please write a review (minimum 10 characters)");
+              return;
+            }
+
+            try {
+              const user = firebase.auth().currentUser;
+
+              // Create the simple review object
+              const review = {
+                bookId: currentBookId,
+                userId: user.uid,
+                rating: selectedRating,
+                review: reviewText,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              };
+
+              // Add review to new BooksReviews collection
+              await db.collection("BooksReviews").add(review);
+
+              reviewForm.classList.add("hidden");
+              resetReviewForm();
+              await loadReviews();
+              alert("Review submitted successfully!");
+            } catch (error) {
+              console.error("Error submitting review:", error);
+              alert("Failed to submit review. Please try again.");
+            }
+          };
         }
 
-        // Close modal and cleanup
-        closeModal.addEventListener("click", () => {
-          pdfModal.classList.add("hidden");
-          pdfViewer.src = "";
-          document.removeEventListener("keydown", preventKeyboardShortcuts);
-        });
-
-        // Zoom controls
-        let currentZoom = 100;
-        zoomIn.addEventListener("click", () => {
-          currentZoom += 10;
-          pdfViewer.style.transform = `scale(${currentZoom / 100})`;
-        });
-
-        zoomOut.addEventListener("click", () => {
-          if (currentZoom > 50) {
-            currentZoom -= 10;
-            pdfViewer.style.transform = `scale(${currentZoom / 100})`;
+        async function loadReviews() {
+          if (!currentBookId) {
+            console.error("No book ID available for loading reviews");
+            return;
           }
-        });
+
+          const reviewsList = document.getElementById("reviewsList");
+          const averageRatingEl = document.getElementById("averageRating");
+          const totalReviewsEl = document.getElementById("totalReviews");
+
+          try {
+            // Show loading state
+            reviewsList.innerHTML = `
+              <div class="flex justify-center items-center py-4">
+                <div class="loader border-t-4 border-blue-500 border-solid rounded-full w-8 h-8 animate-spin"></div>
+              </div>
+            `;
+
+            // Get reviews from BooksReviews collection
+            const reviewsSnapshot = await db
+              .collection("BooksReviews")
+              .where("bookId", "==", currentBookId)
+              .orderBy("createdAt", "desc")
+              .get();
+
+            // Calculate average rating
+            let totalRatings = 0;
+            let totalStars = 0;
+
+            reviewsSnapshot.docs.forEach((doc) => {
+              const reviewData = doc.data();
+              totalRatings++;
+              totalStars += reviewData.rating;
+            });
+
+            const averageRating =
+              totalRatings > 0 ? totalStars / totalRatings : 0;
+            averageRatingEl.textContent = averageRating.toFixed(1);
+            totalReviewsEl.textContent = `(${totalRatings})`;
+
+            if (reviewsSnapshot.empty) {
+              reviewsList.innerHTML = `
+                <div class="text-center py-8">
+                  <i class="fas fa-comments text-gray-600 text-4xl mb-4"></i>
+                  <p class="text-gray-400">No reviews yet. Be the first to review!</p>
+                </div>
+              `;
+              return;
+            }
+
+            // Load all user data at once for efficiency
+            const userIds = [
+              ...new Set(reviewsSnapshot.docs.map((doc) => doc.data().userId)),
+            ];
+            const usersSnapshot = await Promise.all(
+              userIds.map((userId) => db.collection("users").doc(userId).get())
+            );
+            const usersMap = {};
+            usersSnapshot.forEach((userDoc) => {
+              if (userDoc.exists) {
+                usersMap[userDoc.id] = userDoc.data();
+              }
+            });
+
+            reviewsList.innerHTML = reviewsSnapshot.docs
+              .map((doc) => {
+                const review = doc.data();
+                const userData = usersMap[review.userId] || {};
+                const date = review.createdAt
+                  ? new Date(
+                      review.createdAt.seconds * 1000
+                    ).toLocaleDateString()
+                  : "Unknown date";
+
+                return `
+                <div class="bg-gray-700/50 rounded-lg p-4 mb-4">
+                  <div class="flex items-start justify-between mb-2">
+                    <div class="flex items-center gap-3">
+                      <img src="${
+                        userData.photoURL || "https://via.placeholder.com/32"
+                      }" 
+                           alt="${userData.name || "Anonymous"}"
+                           class="w-8 h-8 rounded-full object-cover">
+                      <div>
+                        <h4 class="font-medium text-white">${
+                          userData.name || "Anonymous"
+                        }</h4>
+                        <div class="flex items-center gap-2">
+                          <div class="flex items-center">
+                            ${Array(5)
+                              .fill(0)
+                              .map(
+                                (_, i) =>
+                                  `<i class="fas fa-star ${
+                                    i < review.rating
+                                      ? "text-yellow-400"
+                                      : "text-gray-600"
+                                  }"></i>`
+                              )
+                              .join("")}
+                          </div>
+                          <span class="text-sm text-gray-400">${date}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-300 mt-2">${review.review}</p>
+                </div>
+              `;
+              })
+              .join("");
+          } catch (error) {
+            console.error("Error loading reviews:", error);
+            reviewsList.innerHTML = `
+              <div class="text-center py-8">
+                <i class="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
+                <p class="text-red-500">Error loading reviews. Please try again.</p>
+                <button onclick="loadReviews()" class="mt-4 text-blue-400 hover:text-blue-300">
+                  <i class="fas fa-redo mr-2"></i>Retry
+                </button>
+              </div>
+            `;
+          }
+        }
+
+        function updateStarDisplay(rating, isHover = false) {
+          const stars = document.querySelectorAll(".rating i");
+          const ratingText = document.getElementById("ratingText");
+
+          stars.forEach((star, index) => {
+            if (index < rating) {
+              star.classList.remove("text-gray-400");
+              star.classList.add("text-yellow-400");
+            } else {
+              star.classList.remove("text-yellow-400");
+              star.classList.add("text-gray-400");
+            }
+          });
+
+          if (!isHover) {
+            ratingText.textContent =
+              rating > 0
+                ? `${rating} star${rating > 1 ? "s" : ""}`
+                : "Select rating";
+          }
+        }
+
+        function resetReviewForm() {
+          selectedRating = 0;
+          updateStarDisplay(0);
+          document.getElementById("reviewText").value = "";
+        }
       };
     </script>
   </body>
